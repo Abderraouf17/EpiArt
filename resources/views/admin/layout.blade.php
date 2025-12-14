@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'لوحة التحكم - EpiArt')</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700|playfair-display:600,700" rel="stylesheet" />
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
@@ -13,7 +19,7 @@
         }
         body {
             direction: rtl;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Instrument Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .sidebar {
             background: linear-gradient(180deg, #722F37 0%, #8B3A3A 50%, #5a1e25 100%);
@@ -330,5 +336,100 @@
 
         @yield('content')
     </div>
+    <!-- Message Modal -->
+    <div id="messageModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px; text-align: center; padding: 2rem;">
+            <div id="messageIcon" style="font-size: 3rem; margin-bottom: 1rem;"></div>
+            <h3 id="messageTitle" style="margin-bottom: 1rem;"></h3>
+            <p id="messageText" style="color: #6b7280; margin-bottom: 2rem;"></p>
+            <button onclick="closeMessageModal()" class="btn btn-primary">حسناً</button>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirmModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px; text-align: center; padding: 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">❓</div>
+            <h3 style="margin-bottom: 1rem;">تأكيد الإجراء</h3>
+            <p id="confirmText" style="color: #6b7280; margin-bottom: 2rem;"></p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="confirmCancelBtn" class="btn btn-secondary">إلغاء</button>
+                <button id="confirmOkBtn" class="btn btn-primary">تأكيد</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function showModalAlert(message, type = 'info') {
+        const modal = document.getElementById('messageModal');
+        const icon = document.getElementById('messageIcon');
+        const title = document.getElementById('messageTitle');
+        const text = document.getElementById('messageText');
+        
+        if (type === 'error') {
+            icon.textContent = '❌';
+            title.textContent = 'خطأ';
+            title.style.color = '#dc2626';
+        } else if (type === 'success') {
+            icon.textContent = '✅';
+            title.textContent = 'نجاح';
+            title.style.color = '#059669';
+        } else {
+            icon.textContent = 'ℹ️';
+            title.textContent = 'تنبيه';
+            title.style.color = '#3b82f6';
+        }
+        
+        text.textContent = message;
+        modal.style.display = 'flex';
+    }
+
+    function closeMessageModal() {
+        document.getElementById('messageModal').style.display = 'none';
+    }
+
+    function showModalConfirm(message) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('confirmModal');
+            const text = document.getElementById('confirmText');
+            const okBtn = document.getElementById('confirmOkBtn');
+            const cancelBtn = document.getElementById('confirmCancelBtn');
+            
+            text.textContent = message;
+            modal.style.display = 'flex';
+            
+            const handleOk = () => {
+                modal.style.display = 'none';
+                cleanup();
+                resolve(true);
+            };
+            
+            const handleCancel = () => {
+                modal.style.display = 'none';
+                cleanup();
+                resolve(false);
+            };
+            
+            const cleanup = () => {
+                okBtn.removeEventListener('click', handleOk);
+                cancelBtn.removeEventListener('click', handleCancel);
+            };
+            
+            okBtn.addEventListener('click', handleOk);
+            cancelBtn.addEventListener('click', handleCancel);
+        });
+    }
+    
+    // Override standard alert
+    window.originalAlert = window.alert;
+    window.alert = function(message) {
+        showModalAlert(message);
+    };
+
+    // Global confirmDelete using modal
+    window.confirmDelete = function(message) {
+        return showModalConfirm(message);
+    };
+    </script>
 </body>
 </html>

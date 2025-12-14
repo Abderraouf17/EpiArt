@@ -60,10 +60,22 @@ class Order extends Model
         $labels = [
             self::STATUS_PENDING => 'قيد الانتظار',
             self::STATUS_CONFIRMED => 'مؤكدة',
-            self::STATUS_SHIPPED => 'مرسلة',
-            self::STATUS_DELIVERED => 'مسلمة',
+            self::STATUS_SHIPPED => 'تم الشحن',
+            self::STATUS_DELIVERED => 'تم التوصيل',
             self::STATUS_CANCELLED => 'ملغاة',
         ];
         return $labels[$this->status] ?? $this->status;
+    }
+
+    public function getStatusColorAttribute()
+    {
+        $colors = [
+            self::STATUS_PENDING => 'bg-yellow-100 text-yellow-800',
+            self::STATUS_CONFIRMED => 'bg-blue-100 text-blue-800',
+            self::STATUS_SHIPPED => 'bg-purple-100 text-purple-800',
+            self::STATUS_DELIVERED => 'bg-green-100 text-green-800',
+            self::STATUS_CANCELLED => 'bg-red-100 text-red-800',
+        ];
+        return $colors[$this->status] ?? 'bg-gray-100 text-gray-800';
     }
 }

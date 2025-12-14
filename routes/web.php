@@ -32,6 +32,8 @@ Route::post('/checkout/process', [CartController::class, 'processCheckout'])->na
 // User Dashboard (requires auth)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/orders/{order}/cancel', [DashboardController::class, 'cancelOrder'])->name('orders.cancel');
+    Route::get('/wishlist', [DashboardController::class, 'wishlist'])->name('wishlist.index');
     Route::post('/wishlist/add', [DashboardController::class, 'addToWishlist'])->name('wishlist.add');
     Route::post('/wishlist/remove', [DashboardController::class, 'removeFromWishlist'])->name('wishlist.remove');
     

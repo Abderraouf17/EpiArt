@@ -27,6 +27,18 @@ class DashboardController extends Controller
         return view('dashboard', compact('orders', 'activeOrders', 'wishlistProducts'));
     }
 
+    public function wishlist()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $products = $user->wishlists()
+            ->with('product.images')
+            ->get()
+            ->pluck('product');
+
+        return view('shop.wishlist', compact('products'));
+    }
+
     public function addToWishlist(Request $request)
     {
         $request->validate([
@@ -40,7 +52,8 @@ class DashboardController extends Controller
         if ($exists) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'المنتج موجود بالفعل في قائمتك المفضلة'
+                'message' => 'المنتج موجود بالفعل في قائمتك المفضلة',
+                'count' => Auth::user()->wishlists()->count()
             ]);
         }
 
@@ -51,7 +64,8 @@ class DashboardController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'تمت إضافة المنتج إلى قائمتك المفضلة'
+            'message' => 'تمت إضافة المنتج إلى قائمتك المفضلة',
+            'count' => Auth::user()->wishlists()->count()
         ]);
     }
 
@@ -61,6 +75,29 @@ class DashboardController extends Controller
             ->where('product_id', $request->product_id)
             ->delete();
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'تم إزالة المنتج من قائمتك المفضلة',
+                'count' => Auth::user()->wishlists()->count()
+            ]);
+        }
+
         return back()->with('success', 'تم إزالة المنتج من قائمتك المفضلة');
+    }
+
+    public function cancelOrder(Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'لا يمكن إلغاء هذا الطلب لأنه قيد التنفيذ أو مكتمل');
+        }
+
+        $order->update(['status' => 'cancelled']);
+
+        return back()->with('success', 'تم إلغاء الطلب بنجاح');
     }
 }

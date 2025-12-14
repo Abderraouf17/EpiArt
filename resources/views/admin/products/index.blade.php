@@ -66,7 +66,7 @@
             <h3 id="modalTitle">إضافة منتج جديد</h3>
             <button onclick="closeProductModal()" class="close-btn">&times;</button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body p-6">
             <form id="productForm" method="POST" action="/admin/products" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="POST">
@@ -102,7 +102,9 @@
 
                 <div class="form-group">
                     <label>صور المنتج</label>
+                    <div id="existing-images-container" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;"></div>
                     <input type="file" name="image_files[]" multiple accept="image/*" id="productImages" onchange="previewProductImages(event)" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;" />
+                    <small style="display: block; margin-top: 0.25rem; color: #6b7280;">صيغ الصور المدعومة: JPEG, PNG, GIF, BMP, SVG, WEBP. بحد أقصى 3 صور.</small>
                     <div id="product-images-preview" style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;"></div>
                 </div>
 
@@ -228,9 +230,18 @@ document.addEventListener('click', function(e) {
 
 function previewProductImages(event) {
     const previewContainer = document.getElementById('product-images-preview');
+    const existingCount = document.getElementById('existing-images-container').children.length;
+    const files = event.target.files;
+
+    if (existingCount + files.length > 3) {
+        showModalAlert('لا يمكن إضافة أكثر من 3 صور للمنتج', 'error');
+        event.target.value = ''; // Clear input
+        previewContainer.innerHTML = '';
+        return;
+    }
+
     previewContainer.innerHTML = '';
     
-    const files = event.target.files;
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const reader = new FileReader();
@@ -372,6 +383,10 @@ function openProductModal(productId = null) {
     document.getElementById('variantsContainer').innerHTML = '';
     variantCount = 0;
     
+    // Reset existing images container
+    document.getElementById('existing-images-container').innerHTML = '';
+    document.getElementById('product-images-preview').innerHTML = '';
+    
     if (productId) {
         modalTitle.textContent = 'تعديل المنتج';
         formMethod.value = 'PUT';
@@ -392,6 +407,20 @@ function openProductModal(productId = null) {
                 document.getElementById('productPrice').value = data.price || '';
                 document.getElementById('productDescription').value = data.description || '';
                 document.getElementById('productFeatured').checked = data.is_featured || false;
+                
+                // Load existing images
+                if (data.images && data.images.length > 0) {
+                    const existingContainer = document.getElementById('existing-images-container');
+                    data.images.forEach(image => {
+                        const div = document.createElement('div');
+                        div.style.cssText = 'position: relative; width: 80px; height: 80px;';
+                        div.innerHTML = `
+                            <img src="${image.image_url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+                            <button type="button" onclick="deleteProductImage(${image.id}, this)" style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border: 2px solid white; border-radius: 50%; width: 24px; height: 24px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">&times;</button>
+                        `;
+                        existingContainer.appendChild(div);
+                    });
+                }
                 
                 // Load variants
                 if (data.variations && data.variations.length > 0) {
@@ -421,9 +450,40 @@ function openProductModal(productId = null) {
         formMethod.value = 'POST';
         form.action = '/admin/products';
         form.reset();
+        
+        // Reset image containers
+        document.getElementById('existing-images-container').innerHTML = '';
+        document.getElementById('product-images-preview').innerHTML = '';
     }
     
     modal.style.display = 'flex';
+}
+
+async function deleteProductImage(imageId, btnElement) {
+    const confirmed = await showModalConfirm('هل أنت متأكد من حذف هذه الصورة؟');
+    if (!confirmed) return;
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    
+    fetch(`/admin/product-images/${imageId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        }
+    })
+    .then(async response => {
+        if (response.ok) {
+            btnElement.closest('div').remove();
+        } else {
+            console.error('Delete failed:', response.status, response.statusText);
+            alert(`حدث خطأ أثناء حذف الصورة: ${response.status} ${response.statusText}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('حدث خطأ أثناء حذف الصورة');
+    });
 }
 
 function closeProductModal() {

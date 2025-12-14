@@ -56,7 +56,7 @@
             <h3 id="categoryModalTitle">إضافة فئة جديدة</h3>
             <button onclick="closeCategoryModal()" class="close-btn">&times;</button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body p-6">
             <form id="categoryForm" method="POST" action="/admin/categories">
                 @csrf
                 <input type="hidden" name="_method" id="categoryFormMethod" value="POST">
@@ -81,6 +81,7 @@
                 <div class="form-group">
                     <label>صورة الفئة</label>
                     <input type="file" name="image" accept="image/*" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;" />
+                    <small style="display: block; margin-top: 0.25rem; color: #6b7280;">صيغ الصور المدعومة: JPEG, PNG, GIF, BMP, SVG, WEBP. (صورة واحدة فقط)</small>
                 </div>
 
                 <div class="modal-footer">
@@ -116,43 +117,6 @@ document.addEventListener('click', function(e) {
     }
 });
 
-function addCategoryImageInput() {
-    const container = document.getElementById('categoryImageInputs');
-    const newRow = document.createElement('div');
-    newRow.className = 'category-image-row';
-    newRow.style.cssText = 'display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem;';
-    newRow.innerHTML = `
-        <select class="category-image-type" style="width: 120px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;" onchange="toggleCategoryImageInput(this)">
-            <option value="url">رابط URL</option>
-            <option value="upload">رفع ملف</option>
-        </select>
-        <input type="text" name="category_image_urls[]" class="category-image-url" placeholder="https://example.com/image.jpg" style="flex: 1; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;">
-        <input type="file" name="category_image_files[]" class="category-image-file" accept="image/*" style="display: none; flex: 1;">
-        <button type="button" onclick="removeCategoryImageInput(this)" class="btn btn-danger" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;">×</button>
-    `;
-    container.appendChild(newRow);
-}
-
-function removeCategoryImageInput(btn) {
-    btn.closest('.category-image-row').remove();
-}
-
-function toggleCategoryImageInput(select) {
-    const row = select.closest('.category-image-row');
-    const urlInput = row.querySelector('.category-image-url');
-    const fileInput = row.querySelector('.category-image-file');
-    
-    if (select.value === 'url') {
-        urlInput.style.display = 'block';
-        fileInput.style.display = 'none';
-        fileInput.value = '';
-    } else {
-        urlInput.style.display = 'none';
-        fileInput.style.display = 'block';
-        urlInput.value = '';
-    }
-}
-
 function openCategoryModal(categoryId = null) {
     const modal = document.getElementById('categoryModal');
     const form = document.getElementById('categoryForm');
@@ -175,58 +139,15 @@ function openCategoryModal(categoryId = null) {
                 document.getElementById('categoryName').value = data.name || '';
                 document.getElementById('categoryNumber').value = data.number || '';
                 document.getElementById('categoryDescription').value = data.description || '';
-                
-                // Set up image inputs
-                const imageContainer = document.getElementById('categoryImageInputs');
-                imageContainer.innerHTML = '';
-                
-                if (data.image_url) {
-                    const row = document.createElement('div');
-                    row.className = 'category-image-row';
-                    row.style.cssText = 'display: flex; gap: 0.5rem; align-items: center;';
-                    row.innerHTML = `
-                        <select class="category-image-type" style="width: 120px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;" onchange="toggleCategoryImageInput(this)">
-                            <option value="url">رابط URL</option>
-                            <option value="upload">رفع ملف</option>
-                        </select>
-                        <input type="text" name="category_image_urls[]" class="category-image-url" value="${data.image_url}" style="flex: 1; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;">
-                        <input type="file" name="category_image_files[]" class="category-image-file" accept="image/*" style="display: none; flex: 1;">
-                    `;
-                    imageContainer.appendChild(row);
-                } else {
-                    // Add default empty row
-                    addDefaultCategoryImageRow();
-                }
             });
     } else {
         modalTitle.textContent = 'إضافة فئة جديدة';
         formMethod.value = 'POST';
         form.action = '/admin/categories';
         form.reset();
-        
-        // Reset to one default image input
-        const imageContainer = document.getElementById('categoryImageInputs');
-        imageContainer.innerHTML = '';
-        addDefaultCategoryImageRow();
     }
     
     modal.style.display = 'flex';
-}
-
-function addDefaultCategoryImageRow() {
-    const imageContainer = document.getElementById('categoryImageInputs');
-    const row = document.createElement('div');
-    row.className = 'category-image-row';
-    row.style.cssText = 'display: flex; gap: 0.5rem; align-items: center;';
-    row.innerHTML = `
-        <select class="category-image-type" style="width: 120px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;" onchange="toggleCategoryImageInput(this)">
-            <option value="url">رابط URL</option>
-            <option value="upload">رفع ملف</option>
-        </select>
-        <input type="text" name="category_image_urls[]" class="category-image-url" placeholder="https://example.com/image.jpg" style="flex: 1; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;">
-        <input type="file" name="category_image_files[]" class="category-image-file" accept="image/*" style="display: none; flex: 1;">
-    `;
-    imageContainer.appendChild(row);
 }
 
 function closeCategoryModal() {

@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>EpiArt - Premium Spices & Beauty Products</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700|playfair-display:600,700" rel="stylesheet" />
 
@@ -99,6 +100,15 @@
                         <span class="hidden md:inline">Search</span>
                     </button>
 
+                    <!-- Wishlist Button -->
+                    <a href="{{ route('wishlist.index') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all hover:shadow-md"
+                       :class="currentMode === 'spice' ? 'text-spice-800 hover:bg-spice-50' : 'text-beauty-800 hover:bg-beauty-50'">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                        <span class="hidden md:inline">Wishlist</span>
+                    </a>
+
                     <!-- Cart Button -->
                     <button @click="cartOpen = true" class="relative flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all hover:shadow-md"
                        :class="currentMode === 'spice' ? 'text-spice-800 hover:bg-spice-50' : 'text-beauty-800 hover:bg-beauty-50'">
@@ -111,8 +121,8 @@
 
                     @auth
                         <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm font-medium transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                           :class="currentMode === 'spice' ? 'bg-spice-800 hover:bg-spice-900' : 'bg-beauty-800 hover:bg-beauty-900'">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           :class="currentMode === 'spice' ? 'text-white' : 'text-white'"
+                           :style="currentMode === 'spice' ? 'background: linear-gradient(135deg,#7f1d1d,#8B3A3A); box-shadow: 0 8px 24px rgba(127,29,29,0.22)' : 'background: linear-gradient(135deg,#701a75,#d946ef); box-shadow: 0 8px 24px rgba(112,26,117,0.12)'">                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                             </svg>
                             Dashboard
@@ -303,9 +313,20 @@
                                         <div class="absolute top-3 right-3 bg-spice-600 text-white px-3 py-1 rounded-full text-xs font-semibold">Featured</div>
                                     </div>
                                     <div class="p-4">
-                                        <h3 class="font-semibold text-gray-900 group-hover:text-spice-600 transition mb-2">{{ $product->name }}</h3>
+                                        <h3 class="font-semibold text-gray-900 group-hover:text-spice-600 transition mb-2 truncate">{{ $product->name }}</h3>
                                         <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $product->description }}</p>
-                                        <p class="text-spice-600 font-bold text-lg">{{ number_format($product->price, 0) }} DA</p>
+                                        
+                                        <div class="flex justify-between items-center mt-3">
+                                            <p class="text-spice-600 font-bold text-lg">{{ number_format($product->price, 0) }} DA</p>
+                                            <div class="flex gap-2 z-20 relative">
+                                                <button @click.prevent="addToWishlist({{ $product->id }})" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 transition" title="Add to Wishlist">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                                </button>
+                                                <button @click.prevent="addToCart({ id: {{ $product->id }}, name: '{{ addslashes($product->name) }}', price: {{ $product->price }}, image: '{{ $product->images->first()?->image_url ?? '' }}' })" class="w-8 h-8 rounded-full bg-red-800 flex items-center justify-center text-white hover:bg-red-500 transition shadow-md" title="Add to Cart">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </a>
@@ -341,9 +362,20 @@
                                         <div class="absolute top-3 right-3 bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-semibold">New</div>
                                     </div>
                                     <div class="p-4">
-                                        <h3 class="font-semibold text-gray-900 group-hover:text-spice-600 transition mb-2">{{ $product->name }}</h3>
+                                        <h3 class="font-semibold text-gray-900 group-hover:text-spice-600 transition mb-2 truncate">{{ $product->name }}</h3>
                                         <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $product->description }}</p>
-                                        <p class="text-spice-600 font-bold text-lg">{{ number_format($product->price, 0) }} DA</p>
+                                        
+                                        <div class="flex justify-between items-center mt-3">
+                                            <p class="text-spice-600 font-bold text-lg">{{ number_format($product->price, 0) }} DA</p>
+                                            <div class="flex gap-2 z-20 relative">
+                                                <button @click.prevent="addToWishlist({{ $product->id }})" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 transition" title="Add to Wishlist">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                                </button>
+                                                <button @click.prevent="addToCart({ id: {{ $product->id }}, name: '{{ addslashes($product->name) }}', price: {{ $product->price }}, image: '{{ $product->images->first()?->image_url ?? '' }}' })" class="w-8 h-8 rounded-full bg-red-800 flex items-center justify-center text-white hover:bg-red-500 transition shadow-md" title="Add to Cart">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </a>
@@ -462,7 +494,10 @@
                 <span class="text-lg font-semibold text-gray-800">Total:</span>
                 <span class="text-lg font-bold text-gray-900" x-text="cartTotal() + ' DA'"></span>
             </div>
-            <button class="w-full py-3 rounded-lg text-white font-semibold transition-all hover:shadow-lg transform hover:-translate-y-0.5"
+            <button @click="goToCheckout()" 
+                    :disabled="cartItems.length === 0"
+                    :class="cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg transform hover:-translate-y-0.5'"
+                    class="w-full py-3 rounded-lg text-white font-semibold transition-all"
                     style="background: linear-gradient(135deg, #8B3A3A, #722F37);">
                 Checkout
             </button>
@@ -545,7 +580,7 @@
                 currentMode: 'spice',
                 cartOpen: false,
                 searchOpen: false,
-                cartItems: [],
+                cartItems: @js(array_values(session('cart', []))),
                 searchQuery: '',
                 searchResults: [],
 
@@ -580,6 +615,46 @@
                         this.cartItems.push({...product, quantity: 1});
                     }
                     this.showNotification('تمت إضافة المنتج إلى السلة', 'success');
+
+                    const formData = new FormData();
+                    formData.append('product_id', product.id);
+                    formData.append('price', product.price);
+                    formData.append('quantity', 1);
+
+                    fetch('/cart/add', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log('Cart updated:', data);
+                    })
+                    .catch(error => {
+                        console.error('Cart update failed:', error);
+                        this.showNotification('فشل تحديث السلة', 'error');
+                    });
+                },
+
+                addToWishlist(id) {
+                    fetch('/wishlist/add', {
+                        method: 'POST',
+                        body: JSON.stringify({ product_id: id }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        this.showNotification(data.message, 'success');
+                    })
+                    .catch(error => {
+                        this.showNotification('يجب تسجيل الدخول لإضافة للمفضلة', 'error');
+                    });
                 },
 
                 performSearch() {
@@ -605,9 +680,9 @@
                     }
                     
                     notification.style.display = 'block';
-                    setTimeout(() => {
-                        notification.classList.add('show');
-                    }, 10);
+                    // Force reflow
+                    void notification.offsetWidth;
+                    notification.classList.add('show');
                     
                     setTimeout(() => {
                         this.hideNotification();
@@ -615,14 +690,22 @@
                 },
 
                 hideNotification() {
-                    const notification = document.getElementById('toast-notification');
-                    notification.classList.remove('show');
-                    setTimeout(() => {
-                        notification.style.display = 'none';
-                    }, 300);
+                     const notification = document.getElementById('toast-notification');
+                     notification.classList.remove('show');
+                     setTimeout(() => {
+                         notification.style.display = 'none';
+                     }, 300);
+                 },
+
+                goToCheckout() {
+                    if (this.cartItems.length === 0) {
+                        this.showNotification('السلة فارغة', 'error');
+                        return;
+                    }
+                    window.location.href = '/checkout';
                 }
-            }
-        }
-    </script>
+                }
+                }
+                </script>
 </body>
 </html>

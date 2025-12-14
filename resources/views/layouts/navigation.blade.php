@@ -1,40 +1,49 @@
-<nav x-data="{ 
-    open: false, 
-    cartOpen: false, 
-    cartItems: [],
+<nav x-data="{
+    open: false,
+    cartOpen: false,
+    cartItems: @js(array_values(session('cart', []))),
+    wishlistCount: @auth {{ Auth::user()->wishlists()->count() }} @else 0 @endauth,
     cartTotal() {
-        return this.cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+        return this.cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * parseInt(item.quantity)), 0);
     },
     updateQuantity(id, delta) {
         const item = this.cartItems.find(i => i.id == id);
         if (item) {
-            item.quantity += delta;
-            if (item.quantity <= 0) {
-                this.removeFromCart(id);
+            const newQuantity = parseInt(item.quantity) + delta;
+            if (newQuantity >= 1) {
+                item.quantity = newQuantity;
             }
         }
     },
     removeFromCart(id) {
         this.cartItems = this.cartItems.filter(i => i.id != id);
+        fetch('/cart/remove', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name=\'csrf-token\']').content
+            },
+            body: JSON.stringify({ key: id })
+        });
     },
     addToCart(product) {
         const existing = this.cartItems.find(i => i.id == product.id);
         if (existing) {
-            existing.quantity++;
+            existing.quantity = parseInt(existing.quantity) + 1;
         } else {
             this.cartItems.push({...product, quantity: 1});
         }
         showNotification('تمت إضافة المنتج إلى السلة', 'success');
-    }
-}" class="bg-white border-b border-gray-100 shadow-sm">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="/" class="flex items-center gap-2">
-                        <img src="/images/logo.png" alt="EpiArt" class="h-10 w-auto">
+        }
+    }" class="bg-white/90 backdrop-blur-md border-b border-orange-100 sticky top-0 z-50 transition-colors duration-300 font-sans">
+        <!-- Primary Navigation Menu -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex">
+                    <!-- Logo -->
+                    <div class="shrink-0 flex items-center">
+                        <a href="/" class="flex items-center gap-2">
+                            <img src="/images/EpiArt-logo.png" alt="EpiArt" class="h-12 w-auto">
                         <span class="text-2xl font-bold text-gray-800">EpiArt</span>
                     </a>
                 </div>
@@ -57,15 +66,26 @@
             <!-- Right Side Navigation -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 gap-4">
                 <!-- Search Button -->
-                <button class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all">
+                <button class="flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all hover:shadow-md text-[#991b1b] hover:bg-[#fdf9f3]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                     <span class="text-sm font-medium hidden md:inline">Search</span>
                 </button>
 
+                <!-- Wishlist Button -->
+                @auth
+                <a href="{{ route('wishlist.index') }}" class="relative flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all hover:shadow-md text-[#991b1b] hover:bg-[#fdf9f3]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    <span class="text-sm font-medium hidden md:inline">Wishlist</span>
+                    <span x-show="wishlistCount > 0" x-text="wishlistCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"></span>
+                </a>
+                @endauth
+
                 <!-- Cart Button -->
-                <button @click="cartOpen = true" class="relative flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all">
+                <button @click="cartOpen = true" class="relative flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all hover:shadow-md text-[#991b1b] hover:bg-[#fdf9f3]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                     </svg>
@@ -77,12 +97,12 @@
                 <!-- User Dropdown -->
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-[#991b1b] bg-white hover:text-[#722F37] focus:outline-none transition ease-in-out duration-150">
                             <div>{{ Auth::user()->name }}</div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
                             </div>
                         </button>
@@ -157,54 +177,67 @@
     </div>
 
     <!-- Side Cart -->
-    <div x-show="cartOpen" @click.away="cartOpen = false" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col" style="display: none;">
-        <div class="p-6 border-b flex justify-between items-center">
-            <h2 class="text-2xl font-bold text-gray-800">Your Cart</h2>
-            <button @click="cartOpen = false" class="text-gray-500 hover:text-gray-700">
+    <div x-show="cartOpen" @click.away="cartOpen = false" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col font-sans" style="display: none;">
+        <!-- Header -->
+        <div class="p-6 flex justify-between items-center bg-[#8B3A3A] text-white shadow-md">
+            <div class="flex items-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                <h2 class="text-xl font-bold">عربة التسوق</h2>
+            </div>
+            <button @click="cartOpen = false" class="text-white hover:text-gray-200 transition">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
         
-        <div class="flex-1 overflow-y-auto p-6">
+        <!-- Items -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
             <template x-if="cartItems.length === 0">
-                <div class="text-center py-12 text-gray-500">
-                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex flex-col items-center justify-center h-full text-gray-400">
+                    <svg class="w-20 h-20 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                     </svg>
-                    <p>Your cart is empty</p>
+                    <p class="text-lg">السلة فارغة</p>
+                    <button @click="cartOpen = false" class="mt-4 px-6 py-2 bg-[#8B3A3A] text-white rounded-full hover:bg-[#722F37] transition">تصفح المنتجات</button>
                 </div>
             </template>
             
             <template x-for="item in cartItems" :key="item.id">
-                <div class="flex gap-4 mb-4 pb-4 border-b">
-                    <img :src="item.image" :alt="item.name" class="w-20 h-20 object-cover rounded">
-                    <div class="flex-1">
-                        <h3 class="font-semibold" x-text="item.name"></h3>
-                        <p class="text-sm text-gray-500" x-text="item.price + ' DA'"></p>
-                        <div class="flex items-center gap-2 mt-2">
-                            <button @click="updateQuantity(item.id, -1)" class="px-2 py-1 bg-gray-200 rounded">-</button>
-                            <span x-text="item.quantity"></span>
-                            <button @click="updateQuantity(item.id, 1)" class="px-2 py-1 bg-gray-200 rounded">+</button>
+                <div class="flex gap-4 p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+                    <div class="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border border-gray-200">
+                        <img :src="item.image" :alt="item.name" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-800 line-clamp-1" x-text="item.name"></h3>
+                            <p class="text-sm text-[#8B3A3A] font-semibold" x-text="parseFloat(item.price).toFixed(2) + ' DA'"></p>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                                <button @click="updateQuantity(item.id, -1)" class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-gray-600 hover:text-[#8B3A3A] transition">-</button>
+                                <span class="text-sm font-medium w-6 text-center" x-text="item.quantity"></span>
+                                <button @click="updateQuantity(item.id, 1)" class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-gray-600 hover:text-[#8B3A3A] transition">+</button>
+                            </div>
+                            <button @click="removeFromCart(item.id)" class="text-gray-400 hover:text-red-500 transition p-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                    <button @click="removeFromCart(item.id)" class="text-red-500 hover:text-red-700">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                    </button>
                 </div>
             </template>
         </div>
         
-        <div class="p-6 border-t">
-            <div class="flex justify-between mb-4 text-lg font-bold">
-                <span>Total:</span>
-                <span x-text="cartTotal() + ' DA'"></span>
+        <!-- Footer -->
+        <div class="p-6 bg-white border-t border-gray-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-gray-600 font-medium">المجموع الكلي:</span>
+                <span class="text-2xl font-bold text-[#8B3A3A]" x-text="cartTotal().toFixed(2) + ' DA'"></span>
             </div>
-            <a href="/checkout" class="block w-full bg-burgundy text-white text-center py-3 rounded-lg font-semibold hover:bg-burgundy-dark transition" style="background-color: #8B3A3A;">
-                Checkout
+            <a href="/checkout" class="block w-full bg-[#8B3A3A] text-white text-center py-3.5 rounded-xl font-bold hover:bg-[#722F37] active:transform active:scale-[0.98] transition shadow-lg shadow-[#8B3A3A]/20">
+                إتمام الطلب
             </a>
         </div>
     </div>

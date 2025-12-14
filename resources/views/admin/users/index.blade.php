@@ -73,52 +73,54 @@
 <!-- Edit User Modal -->
 <div id="userModal" class="modal" style="display: none;">
     <div class="modal-content" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #8B3A3A, #722F37); color: white; padding: 1.5rem; border-radius: 8px 8px 0 0; margin: -1.5rem -1.5rem 1.5rem -1.5rem;">
-            <h3 id="modalTitle" style="margin: 0; color: white;">تعديل العميل</h3>
-            <button onclick="closeUserModal()" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.5rem; cursor: pointer; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">&times;</button>
+        <div class="modal-header">
+            <h3 id="modalTitle">تعديل العميل</h3>
+            <button onclick="closeUserModal()" class="close-btn">&times;</button>
         </div>
-        <form id="userForm" method="POST" action="">
-            @csrf
-            <input type="hidden" id="userMethod" name="_method" value="PUT">
-            
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">الاسم</label>
-                <input type="text" name="name" id="userName" required class="form-input" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s;" onfocus="this.style.borderColor='#8B3A3A'" onblur="this.style.borderColor='#e5e7eb'">
-            </div>
+        <div class="modal-body p-6">
+            <form id="userForm" method="POST" action="">
+                @csrf
+                <input type="hidden" id="userMethod" name="_method" value="PUT">
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">الاسم</label>
+                    <input type="text" name="name" id="userName" required class="form-input" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s;" onfocus="this.style.borderColor='#8B3A3A'" onblur="this.style.borderColor='#e5e7eb'">
+                </div>
 
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">البريد الإلكتروني</label>
-                <input type="email" name="email" id="userEmail" required class="form-input" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s;" onfocus="this.style.borderColor='#8B3A3A'" onblur="this.style.borderColor='#e5e7eb'">
-            </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">البريد الإلكتروني</label>
+                    <input type="email" name="email" id="userEmail" required class="form-input" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s;" onfocus="this.style.borderColor='#8B3A3A'" onblur="this.style.borderColor='#e5e7eb'">
+                </div>
 
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">رقم الهاتف</label>
-                <input type="text" name="phone" id="userPhone" class="form-input" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s;" onfocus="this.style.borderColor='#8B3A3A'" onblur="this.style.borderColor='#e5e7eb'">
-            </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">رقم الهاتف</label>
+                    <input type="text" name="phone" id="userPhone" class="form-input" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; transition: all 0.3s;" onfocus="this.style.borderColor='#8B3A3A'" onblur="this.style.borderColor='#e5e7eb'">
+                </div>
 
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; padding: 1rem; background: #f9fafb; border-radius: 8px; transition: all 0.3s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='#f9fafb'">
-                    <input type="checkbox" name="is_admin" id="userIsAdmin" value="1" style="width: 20px; height: 20px; cursor: pointer;">
-                    <span style="font-weight: 600; color: #374151;">مسؤول</span>
-                </label>
-            </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; padding: 1rem; background: #f9fafb; border-radius: 8px; transition: all 0.3s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='#f9fafb'">
+                        <input type="checkbox" name="is_admin" id="userIsAdmin" value="1" style="width: 20px; height: 20px; cursor: pointer;">
+                        <span style="font-weight: 600; color: #374151;">مسؤول</span>
+                    </label>
+                </div>
 
-            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
-                <button type="button" onclick="closeUserModal()" class="btn" style="background: #6b7280; color: white; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='#4b5563'" onmouseout="this.style.background='#6b7280'">إلغاء</button>
-                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600;">حفظ</button>
-            </div>
-        </form>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" onclick="closeUserModal()" class="btn" style="background: #6b7280; color: white; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.background='#4b5563'" onmouseout="this.style.background='#6b7280'">إلغاء</button>
+                    <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600;">حفظ</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <!-- View Customer Orders Modal -->
 <div id="ordersModal" class="modal" style="display: none;">
     <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 1.5rem; border-radius: 8px 8px 0 0; margin: -1.5rem -1.5rem 1.5rem -1.5rem;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;">
             <h3 id="ordersModalTitle" style="margin: 0; color: white;">طلبات العميل</h3>
             <button onclick="closeOrdersModal()" style="background: rgba(255,255,255,0.2); border: none; font-size: 1.5rem; cursor: pointer; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">&times;</button>
         </div>
-        <div id="ordersContent">
+        <div class="modal-body p-6" id="ordersContent">
             <div style="text-align: center; padding: 3rem;">
                 <div class="spinner" style="width: 48px; height: 48px; border: 4px solid #e5e7eb; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
                 <div style="font-size: 1.125rem; color: #6b7280;">جاري التحميل...</div>

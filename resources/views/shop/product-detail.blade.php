@@ -149,40 +149,54 @@
         const productImage = '{{ $product->images->first()?->image_url ?? "" }}';
         const quantity = parseInt(formData.get('quantity')) || 1;
 
-        // Add to Alpine.js cart
-        setTimeout(() => {
-            const navElement = document.querySelector('nav[x-data]');
-            if (navElement) {
-                // Try Alpine.$data method
-                if (window.Alpine && typeof Alpine.$data === 'function') {
-                    const alpineData = Alpine.$data(navElement);
-                    if (alpineData && alpineData.addToCart) {
-                        const product = {
-                            id: productId,
-                            name: productName,
-                            price: productPrice,
-                            image: productImage
-                        };
-                        
-                        for (let i = 0; i < quantity; i++) {
-                            alpineData.addToCart(product);
-                        }
-                        return;
-                    }
-                }
-                
-                // Fallback: dispatch custom event
-                window.dispatchEvent(new CustomEvent('add-to-cart', {
-                    detail: {
-                        id: productId,
-                        name: productName,
-                        price: productPrice,
-                        image: productImage,
-                        quantity: quantity
-                    }
-                }));
+        // Send to backend
+        fetch('/cart/add', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
             }
-        }, 100);
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Add to Alpine.js cart
+                setTimeout(() => {
+                    const navElement = document.querySelector('nav[x-data]');
+                    if (navElement) {
+                        // Try Alpine.$data method
+                        if (window.Alpine && typeof Alpine.$data === 'function') {
+                            const alpineData = Alpine.$data(navElement);
+                            if (alpineData && alpineData.addToCart) {
+                                const product = {
+                                    id: data.item ? data.item.id : productId, // Use backend composite key
+                                    name: productName,
+                                    price: productPrice,
+                                    image: productImage
+                                };
+                                
+                                for (let i = 0; i < quantity; i++) {
+                                    alpineData.addToCart(product);
+                                }
+                                return;
+                            }
+                        }
+                        
+                        // Fallback: dispatch custom event
+                        window.dispatchEvent(new CustomEvent('add-to-cart', {
+                            detail: {
+                                id: data.item ? data.item.id : productId,
+                                name: productName,
+                                price: productPrice,
+                                image: productImage,
+                                quantity: quantity
+                            }
+                        }));
+                    }
+                }, 100);
+            }
+        });
     });
 
     document.querySelectorAll('.variation-select').forEach(select => {
@@ -236,36 +250,54 @@
             const price = btn.dataset.productPrice;
             const image = btn.dataset.productImage;
             
-            // Add to Alpine.js cart
-            setTimeout(() => {
-                const navElement = document.querySelector('nav[x-data]');
-                if (navElement) {
-                    // Try Alpine.$data method
-                    if (window.Alpine && typeof Alpine.$data === 'function') {
-                        const alpineData = Alpine.$data(navElement);
-                        if (alpineData && alpineData.addToCart) {
-                            alpineData.addToCart({
-                                id: id,
-                                name: name,
-                                price: price,
-                                image: image
-                            });
-                            alpineData.cartOpen = true;
-                            return;
-                        }
-                    }
-                    
-                    // Fallback: dispatch custom event
-                    window.dispatchEvent(new CustomEvent('buy-now', {
-                        detail: {
-                            id: id,
-                            name: name,
-                            price: price,
-                            image: image
-                        }
-                    }));
+            const formData = new FormData();
+            formData.append('product_id', id);
+            formData.append('price', price);
+            formData.append('quantity', 1);
+
+            fetch('/cart/add', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
                 }
-            }, 100);
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Add to Alpine.js cart
+                    setTimeout(() => {
+                        const navElement = document.querySelector('nav[x-data]');
+                        if (navElement) {
+                            // Try Alpine.$data method
+                            if (window.Alpine && typeof Alpine.$data === 'function') {
+                                const alpineData = Alpine.$data(navElement);
+                                if (alpineData && alpineData.addToCart) {
+                                    alpineData.addToCart({
+                                        id: id,
+                                        name: name,
+                                        price: price,
+                                        image: image
+                                    });
+                                    alpineData.cartOpen = true;
+                                    return;
+                                }
+                            }
+                            
+                            // Fallback: dispatch custom event
+                            window.dispatchEvent(new CustomEvent('buy-now', {
+                                detail: {
+                                    id: id,
+                                    name: name,
+                                    price: price,
+                                    image: image
+                                }
+                            }));
+                        }
+                    }, 100);
+                }
+            });
         }
     });
 </script>

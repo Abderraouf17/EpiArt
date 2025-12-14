@@ -27,9 +27,7 @@
                     <td>{{ $order->email }}</td>
                     <td>{{ number_format($order->total_price, 2) }} DA</td>
                     <td>
-                        <span class="badge badge-@if($order->status === 'delivered') success @elseif($order->status === 'pending') warning @else danger @endif">
-                            {{ $order->status_label }}
-                        </span>
+                        <x-order-status :order="$order" />
                     </td>
                     <td>{{ $order->created_at->format('Y-m-d H:i') }}</td>
                     <td>

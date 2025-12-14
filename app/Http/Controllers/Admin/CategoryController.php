@@ -25,19 +25,14 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories',
-            'number' => 'nullable|string|max:50',
-            'description' => 'nullable|string',
-            'category_image_urls.*' => 'nullable|url',
-            'category_image_files.*' => 'nullable|image|max:2048',
-            'featured_product_id' => 'nullable|exists:products,id',
-        ]);
-
         // Handle image - prioritize URL over file upload
         $imageUrl = null;
         $imageUrls = $request->input('category_image_urls', []);
         $imageFiles = $request->file('category_image_files', []);
+        
+        if ($request->hasFile('image')) {
+            $imageFiles[] = $request->file('image');
+        }
         
         // Use first non-empty URL
         foreach ($imageUrls as $url) {
@@ -95,6 +90,10 @@ class CategoryController extends Controller
         $imageUrl = null;
         $imageUrls = $request->input('category_image_urls', []);
         $imageFiles = $request->file('category_image_files', []);
+        
+        if ($request->hasFile('image')) {
+            $imageFiles[] = $request->file('image');
+        }
         
         // Use first non-empty URL
         foreach ($imageUrls as $url) {

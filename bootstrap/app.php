@@ -17,5 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Illuminate\Database\QueryException $e) {
+            if (str_contains($e->getMessage(), '[2002]') || str_contains($e->getMessage(), 'Connection refused')) {
+                return response()->view('errors.db_error', [], 503);
+            }
+        });
+        $exceptions->render(function (\PDOException $e) {
+            if (str_contains($e->getMessage(), '[2002]') || str_contains($e->getMessage(), 'Connection refused')) {
+                return response()->view('errors.db_error', [], 503);
+            }
+        });
     })->create();

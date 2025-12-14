@@ -36,6 +36,9 @@ class ShippingController extends Controller
 
     public function edit(ShippingRule $shipping)
     {
+        if (request()->wantsJson()) {
+            return response()->json($shipping);
+        }
         return view('admin.shipping.edit', compact('shipping'));
     }
 

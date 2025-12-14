@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\ShippingRule;use Illuminate\Support\Facades\Auth;use Illuminate\Http\Request;
+use App\Models\ShippingRule;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
@@ -23,30 +26,44 @@ class CartController extends Controller
             ], 401);
         }
 
+        $product = Product::with('images')->find($request->product_id);
+        if (!$product) {
+            return response()->json(['status' => 'error', 'message' => 'المنتج غير موجود'], 404);
+        }
+
         $cart = session()->get('cart', []);
         
+        $key = $request->product_id . '_' . ($request->variation_value ?? '');
+        
         $cartItem = [
+            'id' => $key, // Use composite key for frontend
             'product_id' => $request->product_id,
+            'name' => $product->name,
+            'image' => $product->images->first()?->image_url ?? '',
             'quantity' => $request->quantity ?? 1,
             'variation_type' => $request->variation_type,
             'variation_value' => $request->variation_value,
             'price' => $request->price,
         ];
-
-        $key = $request->product_id . '_' . ($request->variation_value ?? '');
         
         if (isset($cart[$key])) {
             $cart[$key]['quantity'] += $cartItem['quantity'];
+            // Update the cartItem to reflect new quantity for response
+            $cartItem['quantity'] = $cart[$key]['quantity'];
         } else {
             $cart[$key] = $cartItem;
         }
 
         session()->put('cart', $cart);
 
+        $totalQuantity = array_sum(array_column($cart, 'quantity'));
+
         return response()->json([
             'status' => 'success',
             'message' => 'تمت إضافة المنتج إلى السلة',
-            'cartCount' => count($cart)
+            'cartCount' => count($cart),
+            'totalQuantity' => $totalQuantity,
+            'item' => $cartItem // Return the actual item stored/updated
         ]);
     }
 
@@ -131,7 +148,7 @@ class CartController extends Controller
 
         session()->forget('cart');
 
-        return redirect()->route('user.dashboard')
+        return redirect()->route('dashboard')
             ->with('success', 'تم إنشاء الطلب بنجاح. رقم الطلب: ' . $order->id);
     }
 }

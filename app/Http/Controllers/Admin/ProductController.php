@@ -44,11 +44,17 @@ class ProductController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_featured'] = $request->has('is_featured');
+        
+        $imageUrls = $request->input('image_urls', []);
+        $imageFiles = $request->file('image_files', []);
+        
+        if (count($imageUrls) + count($imageFiles) > 3) {
+            return back()->withErrors(['image_files' => 'لا يمكن إضافة أكثر من 3 صور للمنتج']);
+        }
+
         $product = Product::create($validated);
 
         // Handle image URLs and file uploads
-        $imageUrls = $request->input('image_urls', []);
-        $imageFiles = $request->file('image_files', []);
         
         $index = 0;
         foreach ($imageUrls as $i => $url) {
@@ -66,6 +72,7 @@ class ProductController extends Controller
                 $path = $file->store('products', 'public');
                 ProductImage::create([
                     'product_id' => $product->id,
+                    'image' => $path,
                     'image_url' => Storage::url($path),
                     'display_order' => $index++,
                 ]);
@@ -118,15 +125,24 @@ class ProductController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_featured'] = $request->has('is_featured');
+        
+        // Check image limit
+        $currentImagesCount = $product->images()->count();
+        $newImageUrls = $request->input('image_urls', []);
+        $newImageFiles = $request->file('image_files', []);
+        
+        if ($currentImagesCount + count($newImageUrls) + count($newImageFiles) > 3) {
+            return back()->withErrors(['image_files' => 'لا يمكن إضافة أكثر من 3 صور للمنتج']);
+        }
+
         $product->update($validated);
 
-        // Handle images - delete old ones and add new ones
-        $product->images()->delete();
+        // Handle images - append new ones
+        $index = $product->images()->count();
         
         $imageUrls = $request->input('image_urls', []);
         $imageFiles = $request->file('image_files', []);
         
-        $index = 0;
         foreach ($imageUrls as $i => $url) {
             if (!empty($url)) {
                 ProductImage::create([
@@ -142,6 +158,7 @@ class ProductController extends Controller
                 $path = $file->store('products', 'public');
                 ProductImage::create([
                     'product_id' => $product->id,
+                    'image' => $path,
                     'image_url' => Storage::url($path),
                     'display_order' => $index++,
                 ]);
@@ -187,6 +204,10 @@ class ProductController extends Controller
             Storage::disk('public')->delete($image->image);
         }
         $image->delete();
+
+        if (request()->wantsJson()) {
+            return response()->json(['message' => 'Image deleted successfully']);
+        }
 
         return back()->with('success', 'تم حذف الصورة بنجاح');
     }
