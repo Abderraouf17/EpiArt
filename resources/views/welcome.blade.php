@@ -29,7 +29,6 @@
                                 500: '#8B3A3A',
                                 600: '#722F37',
                                 700: '#5a1e25',
-                                600: '#dc2626',
                                 800: '#991b1b', // Deep Red
                                 900: '#7f1d1d',
                             },
@@ -119,15 +118,17 @@
                             Dashboard
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all hover:shadow-lg transform hover:-translate-y-0.5 shadow"
-                           :class="currentMode === 'spice' ? 'text-white bg-spice-700 hover:bg-spice-800 border border-spice-800' : 'text-white bg-beauty-700 hover:bg-beauty-800 border border-beauty-800'">
+                        <a href="{{ route('login') }}" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 ring-1 ring-black/5"
+                           :class="currentMode === 'spice' ? 'text-white' : 'text-white'"
+                           :style="currentMode === 'spice' ? 'background: linear-gradient(135deg,#8B3A3A,#722F37); box-shadow: 0 6px 18px rgba(139,58,58,0.2)' : 'background: linear-gradient(135deg,#d946ef,#86198f); box-shadow: 0 6px 18px rgba(217,70,239,0.12)'">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                             </svg>
                             Log in
                         </a>
-                        <a href="{{ route('register') }}" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105"
-                           :class="currentMode === 'spice' ? 'bg-gradient-to-r from-spice-800 to-spice-600 hover:from-spice-900 hover:to-spice-700' : 'bg-gradient-to-r from-beauty-800 to-beauty-600 hover:from-beauty-900 hover:to-beauty-700'">
+                        <a href="{{ route('register') }}" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 ring-1 ring-black/5"
+                           :class="currentMode === 'spice' ? 'text-white' : 'text-white'"
+                           :style="currentMode === 'spice' ? 'background: linear-gradient(135deg,#7f1d1d,#8B3A3A); box-shadow: 0 8px 24px rgba(127,29,29,0.22)' : 'background: linear-gradient(135deg,#701a75,#d946ef); box-shadow: 0 8px 24px rgba(112,26,117,0.12)'">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                             </svg>
