@@ -1,68 +1,72 @@
 <x-guest-layout>
-    <div class="min-h-screen flex">
+    <div style="min-height: 100vh; display: flex; margin: 0; padding: 0;">
         <!-- Left Side: Image -->
-        <div class="hidden lg:block w-1/2 relative">
-            <img src="{{ asset('images/EpiArt-story.png') }}" alt="Spices" class="absolute inset-0 w-full h-full object-cover">
-            <div class="absolute inset-0 bg-red-800/50"></div>
-            <div class="absolute bottom-0 left-0 p-12 text-white">
-                <h2 class="text-4xl font-serif font-bold mb-4">Taste the Tradition</h2>
-                <p class="text-lg text-white max-w-md">Experience the authentic flavors of Algeria with our premium spice collection.</p>
-            </div>
+        <div style="width: 50%; background: linear-gradient(135deg, rgba(139, 58, 58, 0.9), rgba(114, 47, 55, 0.9)), url(/images/EpiArt-story.png) center/cover; color: white; display: flex; flex-direction: column; justify-content: flex-end; padding: 3rem; margin: 0;">
+            <a href="/" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: white; margin-bottom: 2rem;">
+                <img src="/images/logo.png" alt="EpiArt" style="width: 80px; height: 80px;">
+                <span style="font-size: 2rem; font-weight: bold;">EpiArt</span>
+            </a>
+            <h2 style="font-size: 2.25rem; font-weight: bold; margin-bottom: 1rem;">Welcome Back</h2>
+            <p style="font-size: 1.125rem; color: #fef3c7; max-width: 28rem; line-height: 1.6;">Sign in to access your account and explore our premium spice collection. Discover authentic flavors from around the world.</p>
         </div>
 
         <!-- Right Side: Form -->
-        <div class="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24 bg-white">
-            <div class="w-full max-w-md mx-auto">
-                <div class="text-center mb-10">
-                    <a href="/">
-                        <img src="{{ asset('images/EpiArt-logo-transparent.png') }}" alt="EpiArt" class="h-20 mx-auto">
+        <div style="width: 50%; display: flex; flex-direction: column; justify-content: center; padding: 2rem; background: #fafafa; overflow-y: auto; margin: 0;">
+            <div style="width: 100%; max-width: 28rem; margin: 0 auto;">
+                <div style="text-align: center; margin-bottom: 2.5rem;">
+                    <a href="/" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; margin-bottom: 1.5rem;">
+                        <img src="/images/logo.png" alt="EpiArt" style="height: 40px;">
+                        <span style="font-size: 1.5rem; font-weight: bold; color: #8B3A3A;">EpiArt</span>
                     </a>
-                    <h2 class="mt-6 text-2xl font-bold text-gray-900 font-serif">Welcome Back</h2>
-                    <p class="mt-2 text-sm text-gray-600">Please sign in to your account</p>
+                    <h2 style="font-size: 1.875rem; font-weight: 700; color: #8B3A3A; margin: 0; margin-top: 0.5rem;">Sign In</h2>
+                    <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">Access your account to continue shopping</p>
                 </div>
 
                 <!-- Session Status -->
-                <x-auth-session-status class="mb-4" :status="session('status')" />
+                @if ($errors->any())
+                    <div style="background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; padding: 1rem; margin-bottom: 1rem;">
+                        @foreach ($errors->all() as $error)
+                            <p style="color: #dc2626; font-size: 0.875rem;">{{ $error }}</p>
+                        @endforeach
+                    </div>
+                @endif
 
-                <form method="POST" action="{{ route('login') }}" class="space-y-6">
+                <form method="POST" action="{{ route('login') }}" style="display: flex; flex-direction: column; gap: 1.5rem;">
                     @csrf
 
                     <!-- Email Address -->
                     <div>
-                        <x-input-label for="email" :value="__('Email')" />
-                        <x-text-input id="email" class="block mt-1 w-full rounded-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Email Address</label>
+                        <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 1rem; box-sizing: border-box;">
+                        @error('email') <span style="color: #dc2626; font-size: 0.875rem;">{{ $message }}</span> @enderror
                     </div>
 
                     <!-- Password -->
                     <div>
-                        <x-input-label for="password" :value="__('Password')" />
-                        <x-text-input id="password" class="block mt-1 w-full rounded-full" type="password" name="password" required autocomplete="current-password" />
-                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Password</label>
+                        <input id="password" type="password" name="password" required autocomplete="current-password" style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 1rem; box-sizing: border-box;">
+                        @error('password') <span style="color: #dc2626; font-size: 0.875rem;">{{ $message }}</span> @enderror
                     </div>
 
                     <!-- Remember Me & Forgot Password -->
-                    <div class="flex items-center justify-between">
-                        <label for="remember_me" class="inline-flex items-center">
-                            <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-red-600 shadow-sm focus:ring-red-500" name="remember">
-                            <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <label style="display: flex; align-items: center;">
+                            <input type="checkbox" name="remember" style="width: 1rem; height: 1rem; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer;">
+                            <span style="margin-left: 0.5rem; font-size: 0.875rem; color: #6b7280;">Remember me</span>
                         </label>
-
                         @if (Route::has('password.request'))
-                            <a class="text-sm text-red-600 hover:text-red-800 font-medium" href="{{ route('password.request') }}">
-                                {{ __('Forgot password?') }}
-                            </a>
+                            <a href="{{ route('password.request') }}" style="font-size: 0.875rem; color: #d97706; text-decoration: none; font-weight: 600;">Forgot password?</a>
                         @endif
                     </div>
 
-                    <button class="w-full justify-center bg-red-800 hover:bg-red-900 text-white font-bold py-3 rounded-full shadow-lg transition transform hover:-translate-y-0.5">
-                        {{ __('Log in') }}
+                    <button type="submit" style="width: 100%; padding: 0.75rem; background: #8B3A3A; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 1rem;">
+                        Sign In
                     </button>
 
-                    <p class="text-center text-sm text-gray-600 mt-4">
-                        Don't have an account?
-                        <a href="{{ route('register') }}" class="text-red-600 hover:text-red-800 font-bold">Sign up</a>
-                    </p>
+                    <div style="text-align: center;">
+                        <span style="color: #6b7280; font-size: 0.875rem;">Don't have an account?</span>
+                        <a href="{{ route('register') }}" style="color: #8B3A3A; text-decoration: none; font-weight: 600; margin-left: 0.25rem;">Sign up</a>
+                    </div>
                 </form>
             </div>
         </div>

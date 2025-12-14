@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>EpiArt - Spices & Beauty</title>
+    <title>EpiArt - Premium Spices & Beauty Products</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700|playfair-display:600,700" rel="stylesheet" />
 
@@ -25,9 +25,10 @@
                         },
                         colors: {
                             spice: {
-                                50: '#fdf2f2',
-                                100: '#fde8e8',
-                                500: '#ef4444',
+                                50: '#fdf9f3',
+                                500: '#8B3A3A',
+                                600: '#722F37',
+                                700: '#5a1e25',
                                 600: '#dc2626',
                                 800: '#991b1b', // Deep Red
                                 900: '#7f1d1d',
@@ -68,10 +69,7 @@
 
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" @click="currentMode = 'spice'">
-                    <span class="font-serif text-3xl font-bold tracking-tight transition-colors duration-500"
-                          :class="currentMode === 'spice' ? 'text-spice-800' : 'text-beauty-800'">
-                        EpiArt
-                    </span>
+                    <img src="/images/EpiArt-logo.png" alt="EpiArt" class="h-12 w-auto">
                 </div>
 
                 <!-- Mode Switcher (Central Toggle) -->
@@ -92,28 +90,47 @@
                 </div>
 
                 <!-- Right Actions -->
-                <div class="flex items-center space-x-6">
-                    <a href="#" class="text-sm font-medium hover:underline transition-colors"
-                       :class="currentMode === 'spice' ? 'text-spice-800 hover:text-spice-600' : 'text-beauty-800 hover:text-beauty-600'">
-                        Search
-                    </a>
-                    <a href="#" class="text-sm font-medium hover:underline transition-colors"
-                       :class="currentMode === 'spice' ? 'text-spice-800 hover:text-spice-600' : 'text-beauty-800 hover:text-beauty-600'">
-                        Cart (0)
-                    </a>
+                <div class="flex items-center space-x-4">
+                    <!-- Search Button -->
+                    <button @click="searchOpen = true" class="flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all hover:shadow-md"
+                       :class="currentMode === 'spice' ? 'text-spice-800 hover:bg-spice-50' : 'text-beauty-800 hover:bg-beauty-50'">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <span class="hidden md:inline">Search</span>
+                    </button>
+
+                    <!-- Cart Button -->
+                    <button @click="cartOpen = true" class="relative flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all hover:shadow-md"
+                       :class="currentMode === 'spice' ? 'text-spice-800 hover:bg-spice-50' : 'text-beauty-800 hover:bg-beauty-50'">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                        <span class="hidden md:inline">Cart</span>
+                        <span x-show="cartItems.length > 0" x-text="cartItems.length" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"></span>
+                    </button>
 
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="px-4 py-2 rounded-full text-white text-sm font-medium transition-colors shadow-md"
+                        <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm font-medium transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                            :class="currentMode === 'spice' ? 'bg-spice-800 hover:bg-spice-900' : 'bg-beauty-800 hover:bg-beauty-900'">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            </svg>
                             Dashboard
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="text-sm font-medium hover:underline transition-colors mr-4"
-                           :class="currentMode === 'spice' ? 'text-spice-800 hover:text-spice-600' : 'text-beauty-800 hover:text-beauty-600'">
+                        <a href="{{ route('login') }}" class="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all hover:shadow-lg transform hover:-translate-y-0.5 shadow"
+                           :class="currentMode === 'spice' ? 'text-white bg-spice-700 hover:bg-spice-800 border border-spice-800' : 'text-white bg-beauty-700 hover:bg-beauty-800 border border-beauty-800'">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                            </svg>
                             Log in
                         </a>
-                        <a href="{{ route('register') }}" class="px-4 py-2 rounded-full text-white text-sm font-medium transition-colors shadow-md"
-                           :class="currentMode === 'spice' ? 'bg-spice-800 hover:bg-spice-900' : 'bg-beauty-800 hover:bg-beauty-900'">
+                        <a href="{{ route('register') }}" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105"
+                           :class="currentMode === 'spice' ? 'bg-gradient-to-r from-spice-800 to-spice-600 hover:from-spice-900 hover:to-spice-700' : 'bg-gradient-to-r from-beauty-800 to-beauty-600 hover:from-beauty-900 hover:to-beauty-700'">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                            </svg>
                             Register
                         </a>
                     @endauth
@@ -142,18 +159,28 @@
              x-show="currentMode === 'spice'"
              x-transition.opacity.duration.700ms>
 
-            <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover" alt="Spices Hero">
-            <div class="absolute inset-0 bg-black/40"></div>
+            <img src="/images/mix.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Spices Hero">
+            <div class="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40"></div>
 
-            <div class="relative z-10 h-full flex flex-col justify-center items-center text-center text-white px-4 pt-20">
-                <span class="uppercase tracking-[0.2em] text-sm mb-4 font-semibold text-orange-200">Authentic Flavors</span>
-                <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl mb-6">Taste The Tradition</h1>
-                <p class="text-lg md:text-xl text-gray-200 max-w-2xl mb-10">
-                    Hand-picked saffron, aromatic cardamoms, and rare blends from the silk road to your kitchen.
-                </p>
-                <button class="px-8 py-4 bg-white text-spice-900 font-bold rounded-none hover:bg-orange-50 transition transform hover:scale-105">
-                    EXPLORE SPICES
-                </button>
+            <div class="relative z-10 h-full flex flex-col justify-center items-center text-white px-8 md:px-16 pt-20">
+                <div class="text-center mb-12">
+                    <span class="uppercase tracking-[0.2em] text-sm mb-4 font-semibold text-amber-300 block">Authentic Flavors</span>
+                    <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl mb-6 font-bold">Taste The Tradition</h1>
+                    <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-10 leading-relaxed">
+                        Hand-picked spices and rare blends from around the world to elevate your culinary experience.
+                    </p>
+                    <div class="flex center justify-center flex-col sm:flex-row gap-4">
+                        <a href="/shop" class="px-8 py-4 bg-amber-600 text-white font-bold rounded hover:bg-amber-700 transition transform hover:scale-105">
+                            EXPLORE SPICES
+                        </a>
+                        <button onclick="document.getElementById('featured-section').scrollIntoView({behavior: 'smooth'})" class="px-8 py-4 bg-white/20 border-2 border-white text-white font-bold rounded hover:bg-white/30 transition transform hover:scale-105">
+                            FEATURED PRODUCTS
+                        </button>
+                        <button onclick="document.getElementById('new-arrivals-section').scrollIntoView({behavior: 'smooth'})" class="px-8 py-4 bg-white/20 border-2 border-white text-white font-bold rounded hover:bg-white/30 transition transform hover:scale-105">
+                            NEW IN PRODUCTS
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -163,18 +190,18 @@
              style="display: none;"
              x-transition.opacity.duration.700ms>
 
-            <img src="https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover" alt="Beauty Hero">
+            <img src="/images/EpiArt-story.png" class="absolute inset-0 w-full h-full object-cover" alt="Beauty Hero">
             <div class="absolute inset-0 bg-black/30"></div>
 
-            <div class="relative z-10 h-full flex flex-col justify-center items-center text-center text-white px-4 pt-20">
-                <span class="uppercase tracking-[0.2em] text-sm mb-4 font-semibold text-pink-200">Pure & Organic</span>
-                <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl mb-6">Radiant Natural Beauty</h1>
-                <p class="text-lg md:text-xl text-gray-200 max-w-2xl mb-10">
-                    Rejuvenating serums, organic clays, and floral essences crafted for your glow.
+            <div class="relative z-10 h-full flex flex-col justify-center items-start text-white px-8 md:px-16 pt-20">
+                <span class="uppercase tracking-[0.2em] text-sm mb-4 font-semibold text-amber-300">Pure & Organic</span>
+                <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl mb-6 font-bold">Radiant Natural Beauty</h1>
+                <p class="text-lg md:text-xl text-gray-200 max-w-2xl mb-10 leading-relaxed">
+                    Natural ingredients and traditional beauty products for your wellness journey.
                 </p>
-                <button class="px-8 py-4 bg-white text-beauty-900 font-bold rounded-none hover:bg-pink-50 transition transform hover:scale-105">
+                <a href="/shop" class="px-8 py-4 bg-amber-600 text-white font-bold rounded hover:bg-amber-700 transition transform hover:scale-105">
                     DISCOVER BEAUTY
-                </button>
+                </a>
             </div>
         </div>
     </div>
@@ -189,119 +216,143 @@
                 <div class="h-1 w-20 bg-spice-500 mx-auto"></div>
             </div>
 
-                                                            <!-- Categories Grid (Pyramid Layout - Robust Grid) -->
+                                                            <!-- Categories Grid - Smooth Expanding Animation -->
 
-                                                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 items-end mb-20 px-4">
+                                                            <div class="flex justify-center mb-20">
+                                                                <div class="flex gap-4 w-full max-w-4xl px-4 h-96">
 
-
-
-                                                                <!-- 1. Cereals (Small) -->
-
-                                                                <div class="group cursor-pointer transform lg:scale-75 transition duration-500 hover:-translate-y-2 origin-bottom">
-
-                                                                    <div class="relative aspect-square overflow-hidden mb-3 rounded-lg shadow-sm">
-
-                                                                        <img src="https://images.unsplash.com/photo-1574315042621-50c76891eb66?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Cereals">
-
-                                                                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition"></div>
-
+                                                                    <!-- 1. Cereals -->
+                                                                    <div class="group cursor-pointer flex-1 transition-all duration-1000 hover:flex-[2.5]">
+                                                                        <div class="relative w-full h-full overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-1000">
+                                                                            <img src="/images/cereals.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Cereals">
+                                                                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-1000"></div>
+                                                                            <div class="absolute inset-0 flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                                                                                <h3 class="text-2xl font-bold text-white uppercase tracking-wider">Cereals</h3>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
 
-                                                                    <h3 class="text-base font-bold text-center text-gray-900 group-hover:text-spice-600 transition">Cereals</h3>
-
-                                                                </div>
-
-
-
-                                                                <!-- 2. Mix (Medium) -->
-
-                                                                <div class="group cursor-pointer transform lg:scale-90 transition duration-500 hover:-translate-y-2 origin-bottom">
-
-                                                                    <div class="relative aspect-square overflow-hidden mb-3 rounded-lg shadow-md">
-
-                                                                        <img src="https://images.unsplash.com/photo-1532336414038-cf00d472c914?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Mix">
-
-                                                                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition"></div>
-
+                                                                    <!-- 2. Mix -->
+                                                                    <div class="group cursor-pointer flex-1 transition-all duration-1000 hover:flex-[2.5]">
+                                                                        <div class="relative w-full h-full overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-1000">
+                                                                            <img src="/images/mix.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Mix">
+                                                                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-1000"></div>
+                                                                            <div class="absolute inset-0 flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                                                                                <h3 class="text-2xl font-bold text-white uppercase tracking-wider">Mix</h3>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
 
-                                                                    <h3 class="text-lg font-bold text-center text-gray-900 group-hover:text-spice-600 transition">Mix</h3>
-
-                                                                </div>
-
-
-
-                                                                <!-- 3. Basics (Large - Center) -->
-
-                                                                <div class="group cursor-pointer transform lg:scale-110 z-10 transition duration-500 hover:-translate-y-2 origin-bottom">
-
-                                                                    <div class="relative aspect-square overflow-hidden mb-4 rounded-xl shadow-xl border-4 border-white">
-
-                                                                        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Basics">
-
-                                                                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition"></div>
-
+                                                                    <!-- 3. Basics -->
+                                                                    <div class="group cursor-pointer flex-1 transition-all duration-1000 hover:flex-[2.5]">
+                                                                        <div class="relative w-full h-full overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-1000">
+                                                                            <img src="/images/basic.jpeg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Basics">
+                                                                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-1000"></div>
+                                                                            <div class="absolute inset-0 flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                                                                                <h3 class="text-2xl font-bold text-white uppercase tracking-wider">Basics</h3>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
 
-                                                                    <h3 class="text-2xl font-bold text-center text-spice-800 group-hover:text-spice-600 transition uppercase tracking-widest">Basics</h3>
-
-                                                                </div>
-
-
-
-                                                                <!-- 4. Coffee & Tea (Medium) -->
-
-                                                                <div class="group cursor-pointer transform lg:scale-90 transition duration-500 hover:-translate-y-2 origin-bottom">
-
-                                                                    <div class="relative aspect-square overflow-hidden mb-3 rounded-lg shadow-md">
-
-                                                                        <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Coffee & Tea">
-
-                                                                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition"></div>
-
+                                                                    <!-- 4. Coffee & Tea -->
+                                                                    <div class="group cursor-pointer flex-1 transition-all duration-1000 hover:flex-[2.5]">
+                                                                        <div class="relative w-full h-full overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-1000">
+                                                                            <img src="/images/coffeetea.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Coffee & Tea">
+                                                                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-1000"></div>
+                                                                            <div class="absolute inset-0 flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                                                                                <h3 class="text-2xl font-bold text-white uppercase tracking-wider">Coffee & Tea</h3>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
 
-                                                                    <h3 class="text-lg font-bold text-center text-gray-900 group-hover:text-spice-600 transition">Coffee & Tea</h3>
-
-                                                                </div>
-
-
-
-                                                                <!-- 5. Oils (Small) -->
-
-                                                                <div class="group cursor-pointer transform lg:scale-75 transition duration-500 hover:-translate-y-2 origin-bottom">
-
-                                                                    <div class="relative aspect-square overflow-hidden mb-3 rounded-lg shadow-sm">
-
-                                                                        <img src="https://images.unsplash.com/photo-1519624027794-272cb831c3c9?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Oils">
-
-                                                                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition"></div>
-
+                                                                    <!-- 5. Oils -->
+                                                                    <div class="group cursor-pointer flex-1 transition-all duration-1000 hover:flex-[2.5]">
+                                                                        <div class="relative w-full h-full overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-1000">
+                                                                            <img src="/images/oils.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Oils">
+                                                                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-1000"></div>
+                                                                            <div class="absolute inset-0 flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                                                                                <h3 class="text-2xl font-bold text-white uppercase tracking-wider">Oils</h3>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
 
-                                                                    <h3 class="text-base font-bold text-center text-gray-900 group-hover:text-spice-600 transition">Oils</h3>
-
                                                                 </div>
+                                                            </div>
 
+            <!-- Featured Products Section -->
+            <div id="featured-section" class="py-20">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-serif font-bold text-spice-900 mb-4">Featured Products</h2>
+                    <div class="h-1 w-20 bg-spice-500 mx-auto"></div>
+                </div>
 
-
-                                                            </div>            <!-- New Arrivals -->
-            <div class="text-center mb-12">
-                <h3 class="text-2xl font-bold text-gray-800">New in the Kitchen</h3>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <!-- Product Card -->
-                <template x-for="i in 4">
-                    <div class="bg-gray-50 p-4 rounded-lg hover:shadow-lg transition">
-                        <div class="aspect-square bg-white mb-4 flex items-center justify-center text-spice-200">
-                            <!-- Placeholder Icon -->
-                            <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16z"/></svg>
-                        </div>
-                        <h4 class="font-semibold text-gray-900">Premium Saffron</h4>
-                        <p class="text-spice-600 font-bold mt-1">$45.00</p>
+                @if($featuredProducts->count() > 0)
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        @foreach($featuredProducts as $product)
+                            <a href="/shop/product/{{ $product->slug }}" class="group">
+                                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+                                    <div class="relative aspect-square overflow-hidden bg-gray-100">
+                                        @if($product->images->first())
+                                            <img src="{{ $product->images->first()->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                        @else
+                                            <div class="w-full h-full bg-gradient-to-br from-spice-50 to-spice-100 flex items-center justify-center">
+                                                <svg class="w-12 h-12 text-spice-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16z"/></svg>
+                                            </div>
+                                        @endif
+                                        <div class="absolute top-3 right-3 bg-spice-600 text-white px-3 py-1 rounded-full text-xs font-semibold">Featured</div>
+                                    </div>
+                                    <div class="p-4">
+                                        <h3 class="font-semibold text-gray-900 group-hover:text-spice-600 transition mb-2">{{ $product->name }}</h3>
+                                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $product->description }}</p>
+                                        <p class="text-spice-600 font-bold text-lg">{{ number_format($product->price, 0) }} DA</p>
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
                     </div>
-                </template>
+                @else
+                    <div class="text-center py-12">
+                        <p class="text-gray-500 text-lg">No featured products yet. Check back soon!</p>
+                    </div>
+                @endif
             </div>
+
+            <!-- New Arrivals Section -->
+            <div id="new-arrivals-section" class="py-20">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-serif font-bold text-spice-900 mb-4">New in the Kitchen</h2>
+                    <div class="h-1 w-20 bg-spice-500 mx-auto"></div>
+                </div>
+
+                @if($recentProducts->count() > 0)
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        @foreach($recentProducts as $product)
+                            <a href="/shop/product/{{ $product->slug }}" class="group">
+                                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+                                    <div class="relative aspect-square overflow-hidden bg-gray-100">
+                                        @if($product->images->first())
+                                            <img src="{{ $product->images->first()->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                        @else
+                                            <div class="w-full h-full bg-gradient-to-br from-spice-50 to-spice-100 flex items-center justify-center">
+                                                <svg class="w-12 h-12 text-spice-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16z"/></svg>
+                                            </div>
+                                        @endif
+                                        <div class="absolute top-3 right-3 bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-semibold">New</div>
+                                    </div>
+                                    <div class="p-4">
+                                        <h3 class="font-semibold text-gray-900 group-hover:text-spice-600 transition mb-2">{{ $product->name }}</h3>
+                                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $product->description }}</p>
+                                        <p class="text-spice-600 font-bold text-lg">{{ number_format($product->price, 0) }} DA</p>
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-12">
+                        <p class="text-gray-500 text-lg">No new products yet. Check back soon!</p>
+                    </div>
+                @endif
         </div>
 
         <!-- BEAUTY CONTENT -->
@@ -346,7 +397,7 @@
                             <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16z"/></svg>
                         </div>
                         <h4 class="font-semibold text-gray-900">Rose Facial Oil</h4>
-                        <p class="text-beauty-600 font-bold mt-1">$28.00</p>
+                        <p class="text-beauty-600 font-bold mt-1">1,800 DA</p>
                     </div>
                 </template>
             </div>
@@ -354,15 +405,220 @@
 
     </div>
 
+    <!-- Side Cart -->
+    <div x-show="cartOpen" @click.away="cartOpen = false" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="translate-x-full" 
+         x-transition:enter-end="translate-x-0"
+         x-transition:leave="transition ease-in duration-200" 
+         x-transition:leave-start="translate-x-0"
+         x-transition:leave-end="translate-x-full"
+         class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col" 
+         style="display: none;">
+        
+        <div class="p-6 border-b flex justify-between items-center" style="background: linear-gradient(135deg, #8B3A3A, #722F37);">
+            <h2 class="text-2xl font-bold text-white">Your Cart</h2>
+            <button @click="cartOpen = false" class="text-white hover:text-gray-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6">
+            <template x-if="cartItems.length === 0">
+                <div class="text-center py-12">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    <p class="text-gray-500">Your cart is empty</p>
+                </div>
+            </template>
+
+            <template x-for="item in cartItems" :key="item.id">
+                <div class="flex gap-4 mb-4 p-4 border rounded-lg hover:shadow-md transition">
+                    <img :src="item.image" :alt="item.name" class="w-20 h-20 object-cover rounded">
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-800" x-text="item.name"></h3>
+                        <p class="text-sm text-gray-600" x-text="item.price + ' DA'"></p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <button @click="updateQuantity(item.id, -1)" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
+                            <span x-text="item.quantity" class="px-3"></span>
+                            <button @click="updateQuantity(item.id, 1)" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
+                            <button @click="removeFromCart(item.id)" class="ml-auto text-red-500 hover:text-red-700">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <div class="border-t p-6 bg-gray-50">
+            <div class="flex justify-between mb-4">
+                <span class="text-lg font-semibold text-gray-800">Total:</span>
+                <span class="text-lg font-bold text-gray-900" x-text="cartTotal() + ' DA'"></span>
+            </div>
+            <button class="w-full py-3 rounded-lg text-white font-semibold transition-all hover:shadow-lg transform hover:-translate-y-0.5"
+                    style="background: linear-gradient(135deg, #8B3A3A, #722F37);">
+                Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div x-show="searchOpen" @click.away="searchOpen = false"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20"
+         style="display: none;">
+        <div @click.stop class="bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-4">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" x-model="searchQuery" @input="performSearch" 
+                           placeholder="Search for products..." 
+                           class="flex-1 text-lg outline-none" autofocus>
+                    <button @click="searchOpen = false" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="border-t pt-4 max-h-96 overflow-y-auto">
+                    <template x-if="searchQuery.length === 0">
+                        <p class="text-gray-400 text-center py-8">Start typing to search...</p>
+                    </template>
+                    <template x-if="searchQuery.length > 0 && searchResults.length === 0">
+                        <p class="text-gray-400 text-center py-8">No results found</p>
+                    </template>
+                    <template x-for="result in searchResults" :key="result.id">
+                        <div class="flex gap-4 p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <img :src="result.image" :alt="result.name" class="w-16 h-16 object-cover rounded">
+                            <div>
+                                <h4 class="font-semibold text-gray-800" x-text="result.name"></h4>
+                                <p class="text-sm text-gray-600" x-text="result.price + ' DA'"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" style="
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        border-left: 4px solid #10b981;
+        z-index: 9999;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+    ">
+        <p id="notification-message" style="margin: 0; color: #1f2937; font-weight: 500;"></p>
+    </div>
+
+    <style>
+        #toast-notification.show {
+            transform: translateX(0);
+        }
+    </style>
+
     <script>
         function shopStore() {
             return {
-                currentMode: 'spice', // 'spice' or 'beauty'
+                currentMode: 'spice',
+                cartOpen: false,
+                searchOpen: false,
+                cartItems: [],
+                searchQuery: '',
+                searchResults: [],
 
                 switchMode(mode) {
                     this.currentMode = mode;
-                    // Optional: Smooth scroll to top when switching?
                     window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
+
+                cartTotal() {
+                    return this.cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+                },
+
+                updateQuantity(id, delta) {
+                    const item = this.cartItems.find(i => i.id == id);
+                    if (item) {
+                        item.quantity += delta;
+                        if (item.quantity <= 0) {
+                            this.removeFromCart(id);
+                        }
+                    }
+                },
+
+                removeFromCart(id) {
+                    this.cartItems = this.cartItems.filter(i => i.id != id);
+                },
+
+                addToCart(product) {
+                    const existing = this.cartItems.find(i => i.id == product.id);
+                    if (existing) {
+                        existing.quantity++;
+                    } else {
+                        this.cartItems.push({...product, quantity: 1});
+                    }
+                    this.showNotification('تمت إضافة المنتج إلى السلة', 'success');
+                },
+
+                performSearch() {
+                    // Mock search - replace with actual API call
+                    this.searchResults = [];
+                    if (this.searchQuery.length > 2) {
+                        // Simulate search results
+                        this.searchResults = [
+                            { id: 1, name: 'Sample Product', price: '1500', image: 'https://via.placeholder.com/100' }
+                        ];
+                    }
+                },
+
+                showNotification(message, type) {
+                    const notification = document.getElementById('toast-notification');
+                    const notificationMessage = document.getElementById('notification-message');
+                    notificationMessage.textContent = message;
+                    
+                    if (type === 'success') {
+                        notification.style.borderLeftColor = '#10b981';
+                    } else {
+                        notification.style.borderLeftColor = '#ef4444';
+                    }
+                    
+                    notification.style.display = 'block';
+                    setTimeout(() => {
+                        notification.classList.add('show');
+                    }, 10);
+                    
+                    setTimeout(() => {
+                        this.hideNotification();
+                    }, 3000);
+                },
+
+                hideNotification() {
+                    const notification = document.getElementById('toast-notification');
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        notification.style.display = 'none';
+                    }, 300);
                 }
             }
         }
