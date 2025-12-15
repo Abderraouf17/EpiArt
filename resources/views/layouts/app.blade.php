@@ -16,7 +16,7 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
+
         <style>
             [x-cloak] { display: none !important; }
         </style>
@@ -45,16 +45,16 @@
         </div>
 
         <!-- Side Cart -->
-        <div x-show="cartOpen" @click.away="cartOpen = false" 
+        <div x-show="cartOpen" @click.away="cartOpen = false"
              x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="translate-x-full" 
+             x-transition:enter-start="translate-x-full"
              x-transition:enter-end="translate-x-0"
-             x-transition:leave="transition ease-in duration-200" 
+             x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="translate-x-0"
              x-transition:leave-end="translate-x-full"
-             class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col" 
+             class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col"
              style="display: none;">
-            
+
             <div class="p-6 border-b flex justify-between items-center" style="background: linear-gradient(135deg, #8B3A3A, #722F37);">
                 <h2 class="text-2xl font-bold text-white">Your Cart</h2>
                 <button @click="cartOpen = false" class="text-white hover:text-gray-200">
@@ -100,7 +100,7 @@
                     <span class="text-lg font-semibold text-gray-800">Total:</span>
                     <span class="text-lg font-bold text-gray-900" x-text="cartTotal() + ' DA'"></span>
                 </div>
-                <button @click="goToCheckout()" 
+                <button @click="goToCheckout()"
                         :disabled="cartItems.length === 0"
                         :class="cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg transform hover:-translate-y-0.5'"
                         class="w-full py-3 rounded-lg text-white font-semibold transition-all"
@@ -139,9 +139,11 @@
         <script>
             function shopStore() {
                 return {
+                    open: false,
                     cartOpen: false,
                     cartItems: @js(array_values(session('cart', []))),
-                    
+                    wishlistCount: @auth {{ Auth::user()->wishlists()->count() }} @else 0 @endauth,
+
                     cartTotal() {
                         return this.cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
                     },
@@ -218,18 +220,18 @@
                         const notification = document.getElementById('toast-notification');
                         const notificationMessage = document.getElementById('notification-message');
                         notificationMessage.textContent = message;
-                        
+
                         if (type === 'success') {
                             notification.style.borderLeftColor = '#10b981';
                         } else {
                             notification.style.borderLeftColor = '#ef4444';
                         }
-                        
+
                         notification.style.display = 'block';
                         // Force reflow
                         void notification.offsetWidth;
                         notification.classList.add('show');
-                        
+
                         setTimeout(() => {
                             this.hideNotification();
                         }, 3000);

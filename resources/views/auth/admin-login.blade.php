@@ -2,7 +2,7 @@
     <div style="min-height: 100vh; display: flex; margin: 0; padding: 0;">
         <!-- Left Side: Image -->
         <div style="width: 50%; background: linear-gradient(135deg, rgba(139, 58, 58, 0.9), rgba(114, 47, 55, 0.9)), url(/images/EpiArt-story.png) center/cover; color: white; display: flex; flex-direction: column; justify-content: flex-end; padding: 3rem; margin: 0;">
-            <img src="/images/EpiArt-logo.png" alt="EpiArt" style="width: 80px; height: 80px; margin-bottom: 2rem;">
+            <img src="/logo/logo-main.png" alt="EpiArt" style="width: 80px; height: 80px; margin-bottom: 2rem;">
             <h2 style="font-size: 2.25rem; font-weight: bold; margin-bottom: 1rem;">Admin Portal</h2>
             <p style="font-size: 1.125rem; color: #fef3c7; max-width: 28rem; line-height: 1.6;">Manage your EpiArt store, products, orders, and customers from our admin dashboard.</p>
         </div>
@@ -11,7 +11,7 @@
         <div style="width: 50%; display: flex; flex-direction: column; justify-content: center; padding: 2rem; background: #fafafa; overflow-y: auto; margin: 0;">
             <div style="width: 100%; max-width: 28rem; margin: 0 auto;">
                 <div style="text-align: center; margin-bottom: 2.5rem;">
-                    <img src="/images/EpiArt-horizontal.png" alt="EpiArt" style="height: 50px; margin-bottom: 1.5rem;">
+                    <img src="/logo/logo-main.png" alt="EpiArt" style="height: 50px; margin-bottom: 1.5rem;">
                     <h2 style="font-size: 1.875rem; font-weight: 700; color: #8B3A3A; margin: 0; margin-top: 0.5rem;">Admin Sign In</h2>
                     <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">Access the admin dashboard</p>
                 </div>

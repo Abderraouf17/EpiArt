@@ -69,7 +69,7 @@
 
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" @click="currentMode = 'spice'">
-                    <img src="/images/EpiArt-logo.png" alt="EpiArt" class="h-12 w-auto">
+                    <img src="/logo/logo-main.png" alt="EpiArt" class="h-12 w-auto">
                 </div>
 
                 <!-- Mode Switcher (Central Toggle) -->
@@ -315,7 +315,7 @@
                                     <div class="p-4">
                                         <h3 class="font-semibold text-gray-900 group-hover:text-spice-600 transition mb-2 truncate">{{ $product->name }}</h3>
                                         <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $product->description }}</p>
-                                        
+
                                         <div class="flex justify-between items-center mt-3">
                                             <p class="text-spice-600 font-bold text-lg">{{ number_format($product->price, 0) }} DA</p>
                                             <div class="flex gap-2 z-20 relative">
@@ -364,7 +364,7 @@
                                     <div class="p-4">
                                         <h3 class="font-semibold text-gray-900 group-hover:text-spice-600 transition mb-2 truncate">{{ $product->name }}</h3>
                                         <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $product->description }}</p>
-                                        
+
                                         <div class="flex justify-between items-center mt-3">
                                             <p class="text-spice-600 font-bold text-lg">{{ number_format($product->price, 0) }} DA</p>
                                             <div class="flex gap-2 z-20 relative">
@@ -439,16 +439,16 @@
     </div>
 
     <!-- Side Cart -->
-    <div x-show="cartOpen" @click.away="cartOpen = false" 
+    <div x-show="cartOpen" @click.away="cartOpen = false"
          x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="translate-x-full" 
+         x-transition:enter-start="translate-x-full"
          x-transition:enter-end="translate-x-0"
-         x-transition:leave="transition ease-in duration-200" 
+         x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="translate-x-0"
          x-transition:leave-end="translate-x-full"
-         class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col" 
+         class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col"
          style="display: none;">
-        
+
         <div class="p-6 border-b flex justify-between items-center" style="background: linear-gradient(135deg, #8B3A3A, #722F37);">
             <h2 class="text-2xl font-bold text-white">Your Cart</h2>
             <button @click="cartOpen = false" class="text-white hover:text-gray-200">
@@ -494,7 +494,7 @@
                 <span class="text-lg font-semibold text-gray-800">Total:</span>
                 <span class="text-lg font-bold text-gray-900" x-text="cartTotal() + ' DA'"></span>
             </div>
-            <button @click="goToCheckout()" 
+            <button @click="goToCheckout()"
                     :disabled="cartItems.length === 0"
                     :class="cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg transform hover:-translate-y-0.5'"
                     class="w-full py-3 rounded-lg text-white font-semibold transition-all"
@@ -520,8 +520,8 @@
                     <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    <input type="text" x-model="searchQuery" @input="performSearch" 
-                           placeholder="Search for products..." 
+                    <input type="text" x-model="searchQuery" @input="performSearch"
+                           placeholder="Search for products..."
                            class="flex-1 text-lg outline-none" autofocus>
                     <button @click="searchOpen = false" class="text-gray-400 hover:text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -608,14 +608,6 @@
                 },
 
                 addToCart(product) {
-                    const existing = this.cartItems.find(i => i.id == product.id);
-                    if (existing) {
-                        existing.quantity++;
-                    } else {
-                        this.cartItems.push({...product, quantity: 1});
-                    }
-                    this.showNotification('تمت إضافة المنتج إلى السلة', 'success');
-
                     const formData = new FormData();
                     formData.append('product_id', product.id);
                     formData.append('price', product.price);
@@ -632,6 +624,16 @@
                     .then(res => res.json())
                     .then(data => {
                         console.log('Cart updated:', data);
+                        if (data.status === 'success' && data.item) {
+                            const existingIdx = this.cartItems.findIndex(i => i.id == data.item.id);
+                            if (existingIdx > -1) {
+                                this.cartItems[existingIdx].quantity = parseInt(data.item.quantity);
+                            } else {
+                                this.cartItems.push(data.item);
+                            }
+                            this.cartOpen = true;
+                            this.showNotification('تمت إضافة المنتج إلى السلة', 'success');
+                        }
                     })
                     .catch(error => {
                         console.error('Cart update failed:', error);
@@ -672,18 +674,18 @@
                     const notification = document.getElementById('toast-notification');
                     const notificationMessage = document.getElementById('notification-message');
                     notificationMessage.textContent = message;
-                    
+
                     if (type === 'success') {
                         notification.style.borderLeftColor = '#10b981';
                     } else {
                         notification.style.borderLeftColor = '#ef4444';
                     }
-                    
+
                     notification.style.display = 'block';
                     // Force reflow
                     void notification.offsetWidth;
                     notification.classList.add('show');
-                    
+
                     setTimeout(() => {
                         this.hideNotification();
                     }, 3000);

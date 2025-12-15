@@ -3,7 +3,7 @@
         <!-- Left Side: Image -->
         <div style="width: 50%; background: linear-gradient(135deg, rgba(139, 58, 58, 0.9), rgba(114, 47, 55, 0.9)), url(/images/EpiArt-story.png) center/cover; color: white; display: flex; flex-direction: column; justify-content: flex-end; padding: 3rem; margin: 0;">
             <a href="/" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: white; margin-bottom: 2rem;">
-                <img src="/images/logo.png" alt="EpiArt" style="width: 80px; height: 80px;">
+                <img src="/logo/logo-main.png" alt="EpiArt" style="width: 80px; height: 80px;">
                 <span style="font-size: 2rem; font-weight: bold;">EpiArt</span>
             </a>
             <h2 style="font-size: 2.25rem; font-weight: bold; margin-bottom: 1rem;">Welcome Back</h2>
@@ -15,7 +15,7 @@
             <div style="width: 100%; max-width: 28rem; margin: 0 auto;">
                 <div style="text-align: center; margin-bottom: 2.5rem;">
                     <a href="/" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; margin-bottom: 1.5rem;">
-                        <img src="/images/logo.png" alt="EpiArt" style="height: 40px;">
+                        <img src="/logo/logo-main.png" alt="EpiArt" style="height: 40px;">
                         <span style="font-size: 1.5rem; font-weight: bold; color: #8B3A3A;">EpiArt</span>
                     </a>
                     <h2 style="font-size: 1.875rem; font-weight: 700; color: #8B3A3A; margin: 0; margin-top: 0.5rem;">Sign In</h2>

@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'لوحة التحكم - EpiArt')</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700|playfair-display:600,700" rel="stylesheet" />
-    
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
@@ -277,7 +277,7 @@
 <body>
     <div class="sidebar">
         <a href="/" class="logo">
-            <img src="/images/logo.png" alt="EpiArt">
+            <img src="/logo/logo-main.png" alt="EpiArt">
             <span>EpiArt</span>
         </a>
         <nav>
@@ -365,7 +365,7 @@
         const icon = document.getElementById('messageIcon');
         const title = document.getElementById('messageTitle');
         const text = document.getElementById('messageText');
-        
+
         if (type === 'error') {
             icon.textContent = '❌';
             title.textContent = 'خطأ';
@@ -379,7 +379,7 @@
             title.textContent = 'تنبيه';
             title.style.color = '#3b82f6';
         }
-        
+
         text.textContent = message;
         modal.style.display = 'flex';
     }
@@ -394,32 +394,32 @@
             const text = document.getElementById('confirmText');
             const okBtn = document.getElementById('confirmOkBtn');
             const cancelBtn = document.getElementById('confirmCancelBtn');
-            
+
             text.textContent = message;
             modal.style.display = 'flex';
-            
+
             const handleOk = () => {
                 modal.style.display = 'none';
                 cleanup();
                 resolve(true);
             };
-            
+
             const handleCancel = () => {
                 modal.style.display = 'none';
                 cleanup();
                 resolve(false);
             };
-            
+
             const cleanup = () => {
                 okBtn.removeEventListener('click', handleOk);
                 cancelBtn.removeEventListener('click', handleCancel);
             };
-            
+
             okBtn.addEventListener('click', handleOk);
             cancelBtn.addEventListener('click', handleCancel);
         });
     }
-    
+
     // Override standard alert
     window.originalAlert = window.alert;
     window.alert = function(message) {
