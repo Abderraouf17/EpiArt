@@ -8,50 +8,21 @@ class WelcomeController extends Controller
 {
     public function index()
     {
-        $recentProducts = Product::with('images')
-            ->orderBy('created_at', 'desc')
-            ->limit(4)
+        // Fetch products marked as "new" (both spice and beauty) for tab-based filtering
+        $newProducts = Product::with('images')
+            ->where('is_new', true)
+            ->orderBy('display_order')
+            ->limit(8) // 4 spice + 4 beauty
             ->get();
 
         $featuredProducts = Product::with('images')
             ->where('is_featured', true)
             ->orderBy('display_order')
-            ->limit(8)
+            ->limit(8) // 4 spice + 4 beauty
             ->get();
 
         return view('welcome', [
-            'recentProducts' => $recentProducts,
-            'featuredProducts' => $featuredProducts,
-        ]);
-    }
-
-    public function beauty()
-    {
-        // Get beauty-related categories (you can adjust these names based on your actual categories)
-        $beautyCategories = \App\Models\Category::whereIn('slug', [
-            'skincare',
-            'haircare',
-            'aromatherapy',
-            'cosmetics',
-            'wellness',
-            'beauty'
-        ])->pluck('id');
-
-        $recentProducts = Product::with('images')
-            ->whereIn('category_id', $beautyCategories)
-            ->orderBy('created_at', 'desc')
-            ->limit(4)
-            ->get();
-
-        $featuredProducts = Product::with('images')
-            ->whereIn('category_id', $beautyCategories)
-            ->where('is_featured', true)
-            ->orderBy('display_order')
-            ->limit(8)
-            ->get();
-
-        return view('beauty', [
-            'recentProducts' => $recentProducts,
+            'newProducts' => $newProducts,
             'featuredProducts' => $featuredProducts,
         ]);
     }

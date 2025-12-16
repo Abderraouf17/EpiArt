@@ -8,15 +8,6 @@ use Illuminate\Http\Request;
 
 class ShopController extends Controller
 {
-    public function index()
-    {
-        $products = Product::with('images', 'category')
-            ->paginate(12);
-        $categories = Category::with('products')->get();
-
-        return view('shop.index', compact('products', 'categories'));
-    }
-
     public function category(Category $category)
     {
         $products = Product::where('category_id', $category->id)

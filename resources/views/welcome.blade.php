@@ -80,18 +80,30 @@
                     <img src="/logo/logo-main.png" alt="EpiArt" class="h-12 w-auto">
                 </div>
 
-                <!-- Mode Switcher (Central Toggle) - Now Navigation Links -->
-                <div class="hidden md:flex bg-gray-100 p-1 rounded-full">
-                    <a href="/"
-                        class="w-24 h-8 rounded-full text-sm font-semibold transition-all duration-300 flex items-center justify-center"
-                        :class="'{{ request()->is('/') ? 'bg-white shadow-sm text-spice-800' : 'text-gray-500 hover:text-gray-700' }}'">
-                        Spices
-                    </a>
-                    <a href="/beauty"
-                        class="w-24 h-8 rounded-full text-sm font-semibold transition-all duration-300 flex items-center justify-center"
-                        :class="'{{ request()->is('beauty') ? 'bg-white shadow-sm text-beauty-800' : 'text-gray-500 hover:text-gray-700' }}'">
-                        Beauty
-                    </a>
+                <!-- Mode Switcher (Central Toggle) - Tab Buttons -->
+                <div class="hidden md:flex items-center gap-3">
+                    <!-- Shop Button -->
+                    <button onclick="document.getElementById('all-products').scrollIntoView({behavior: 'smooth'})" 
+                        class="px-6 py-2 bg-gray-800 text-white rounded-full text-sm font-semibold hover:bg-gray-700 transition-all duration-300 shadow-md hover:shadow-lg">
+                        Shop
+                    </button>
+
+                    <!-- Spices/Beauty Toggle -->
+                    <div class="flex bg-gray-100 p-1 rounded-full relative">
+                        <div class="w-24 h-8 bg-white rounded-full shadow-sm absolute transition-all duration-300 ease-out top-1"
+                            :class="currentMode === 'spice' ? 'left-1' : 'left-[6.25rem]'"></div>
+
+                        <button @click="currentMode = 'spice'"
+                            class="relative z-10 w-24 h-8 rounded-full text-sm font-semibold transition-colors duration-300 focus:outline-none"
+                            :class="currentMode === 'spice' ? 'text-spice-800' : 'text-gray-500 hover:text-gray-700'">
+                            Spices
+                        </button>
+                        <button @click="currentMode = 'beauty'"
+                            class="relative z-10 w-24 h-8 rounded-full text-sm font-semibold transition-colors duration-300 focus:outline-none"
+                            :class="currentMode === 'beauty' ? 'text-beauty-800' : 'text-gray-500 hover:text-gray-700'">
+                            Beauty
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Right Actions -->
@@ -200,10 +212,11 @@
                         Hand-picked spices and rare blends from around the world to elevate your culinary experience.
                     </p>
                     <div class="flex center justify-center flex-col sm:flex-row gap-4">
-                        <a href="/shop"
+                        <button
+                            onclick="document.getElementById('all-products').scrollIntoView({behavior: 'smooth'})"
                             class="px-8 py-4 bg-amber-600 text-white font-bold rounded hover:bg-amber-700 transition transform hover:scale-105">
                             EXPLORE SPICES
-                        </a>
+                        </button>
                         <button
                             onclick="document.getElementById('featured-section').scrollIntoView({behavior: 'smooth'})"
                             class="px-8 py-4 bg-white/20 border-2 border-white text-white font-bold rounded hover:bg-white/30 transition transform hover:scale-105">
@@ -219,6 +232,40 @@
             </div>
         </div>
 
+        <!-- Beauty Hero -->
+        <div class="absolute inset-0 transition-opacity duration-700 ease-in-out" x-show="currentMode === 'beauty'"
+            x-transition.opacity.duration.700ms>
+
+            <img src="/images/EpiArt-story.png" class="absolute inset-0 w-full h-full object-cover" alt="Beauty Hero">
+            <div class="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-pink-900/40"></div>
+
+            <div class="relative z-10 h-full flex flex-col justify-center items-center text-white px-8 md:px-16 pt-20">
+                <div class="text-center mb-12">
+                    <span class="uppercase tracking-[0.2em] text-sm mb-4 font-semibold text-pink-300 block">Pure & Organic</span>
+                    <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl mb-6 font-bold">Radiant Natural Beauty</h1>
+                    <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-10 leading-relaxed">
+                        Natural ingredients and traditional beauty products for your wellness journey.
+                    </p>
+                    <div class="flex center justify-center flex-col sm:flex-row gap-4">
+                        <button
+                            onclick="document.getElementById('all-beauty-products').scrollIntoView({behavior: 'smooth'})"
+                            class="px-8 py-4 bg-pink-600 text-white font-bold rounded hover:bg-pink-700 transition transform hover:scale-105">
+                            DISCOVER BEAUTY
+                        </button>
+                        <button
+                            onclick="document.getElementById('featured-section-beauty').scrollIntoView({behavior: 'smooth'})"
+                            class="px-8 py-4 bg-white/20 border-2 border-white text-white font-bold rounded hover:bg-white/30 transition transform hover:scale-105">
+                            FEATURED PRODUCTS
+                        </button>
+                        <button
+                            onclick="document.getElementById('new-arrivals-section-beauty').scrollIntoView({behavior: 'smooth'})"
+                            class="px-8 py-4 bg-white/20 border-2 border-white text-white font-bold rounded hover:bg-white/30 transition transform hover:scale-105">
+                            NEW IN PRODUCTS
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 
@@ -339,7 +386,7 @@
 
                 @if($featuredProducts->count() > 0)
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        @foreach($featuredProducts as $product)
+                        @foreach($featuredProducts->where('type', 'spice')->take(4) as $product)
                             <a href="/shop/product/{{ $product->slug }}" class="group">
                                 <div
                                     class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
@@ -408,9 +455,9 @@
                     <div class="h-1 w-20 bg-spice-500 mx-auto"></div>
                 </div>
 
-                @if($recentProducts->count() > 0)
+                @if($newProducts->count() > 0)
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        @foreach($recentProducts as $product)
+                        @foreach($newProducts->where('type', 'spice')->take(4) as $product)
                             <a href="/shop/product/{{ $product->slug }}" class="group">
                                 <div
                                     class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
@@ -472,129 +519,381 @@
                 @endif
             </div>
 
+            <!-- ALL PRODUCTS SECTION (SPICE) -->
+            <div id="all-products" class="mt-20">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-spice-900 mb-4">All Spice Products</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">Browse our complete collection of premium spices</p>
+                </div>
 
-        </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @foreach(App\Models\Product::where('type', 'spice')->with('images')->get() as $product)
+                        <a href="/shop/product/{{ $product->slug }}" class="group">
+                            <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+                                <div class="relative aspect-square overflow-hidden bg-gray-100">
+                                    @if($product->images->first())
+                                        <img src="{{ $product->images->first()->image_url }}" alt="{{ $product->name }}"
+                                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                    @else
+                                        <div class="w-full h-full bg-gradient-to-br from-spice-50 to-spice-100 flex items-center justify-center">
+                                            <svg class="w-12 h-12 text-spice-300" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 2a8 8 0 100 16 8 8 0 000-16z" />
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-gray-900 mb-2 group-hover:text-spice-700 transition-colors">
+                                        {{ $product->name }}
+                                    </h3>
+                                    <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $product->description }}</p>
 
-        </div>
-
-        <!-- Side Cart -->
-        <div x-show="cartOpen" @click.away="cartOpen = false" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0"
-            x-transition:leave-end="translate-x-full"
-            class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col" style="display: none;">
-
-            <div class="p-6 border-b flex justify-between items-center"
-                style="background: linear-gradient(135deg, #8B3A3A, #722F37);">
-                <h2 class="text-2xl font-bold text-white">Your Cart</h2>
-                <button @click="cartOpen = false" class="text-white hover:text-gray-200">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                                    <div class="flex justify-between items-center mt-3">
+                                        <p class="text-spice-700 font-bold text-lg">{{ number_format((float)$product->price, 0) }} DA</p>
+                                        <div class="flex gap-2 z-20 relative">
+                                            <button @click.prevent="addToWishlist({{ $product->id }})"
+                                                class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 transition"
+                                                title="Add to Wishlist">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                                </svg>
+                                            </button>
+                                            <button
+                                                @click.prevent="addToCart({ id: {{ $product->id }}, name: '{{ addslashes($product->name) }}', price: {{ $product->price }}, image: '{{ $product->images->first()?->image_url ?? '' }}' })"
+                                                class="w-8 h-8 rounded-full bg-red-800 flex items-center justify-center text-white hover:bg-red-500 transition shadow-md"
+                                                title="Add to Cart">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-6">
-                <template x-if="cartItems.length === 0">
-                    <div class="text-center py-12">
-                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        <p class="text-gray-500">Your cart is empty</p>
-                    </div>
-                </template>
 
-                <template x-for="item in cartItems" :key="item.id">
-                    <div class="flex gap-4 mb-4 p-4 border rounded-lg hover:shadow-md transition">
-                        <img :src="item.image" :alt="item.name" class="w-20 h-20 object-cover rounded">
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-gray-800" x-text="item.name"></h3>
-                            <p class="text-sm text-gray-600" x-text="item.price + ' DA'"></p>
-                            <div class="flex items-center gap-2 mt-2">
-                                <button @click="updateQuantity(item.id, -1)"
-                                    class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
-                                <span x-text="item.quantity" class="px-3"></span>
-                                <button @click="updateQuantity(item.id, 1)"
-                                    class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
-                                <button @click="removeFromCart(item.id)"
-                                    class="ml-auto text-red-500 hover:text-red-700">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
+        </div>
+
+        <!-- BEAUTY CONTENT -->
+        <div x-show="currentMode === 'beauty'" x-transition.opacity.duration.500ms>
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-serif font-bold text-purple-900 mb-4">Pure Beauty Collections</h2>
+                <div class="h-1 w-20 bg-pink-500 mx-auto"></div>
+            </div>
+
+            <!-- Categories Grid - Beauty themed -->
+            <div class="flex justify-center mb-20">
+                <div class="flex gap-4 w-full max-w-4xl px-4 h-96">
+                    
+                    <a href="/shop/beauty" class="group cursor-pointer flex-1 transition-all duration-1000 hover:flex-[2.5]">
+                        <div class="relative w-full h-full overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-1000">
+                            <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&h=1200&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Skincare">
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-1000"></div>
+                            <div class="absolute inset-0 flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                                <h3 class="text-2xl font-bold text-white uppercase tracking-wider">Skincare</h3>
                             </div>
                         </div>
-                    </div>
-                </template>
-            </div>
+                    </a>
 
-            <div class="border-t p-6 bg-gray-50">
-                <div class="flex justify-between mb-4">
-                    <span class="text-lg font-semibold text-gray-800">Total:</span>
-                    <span class="text-lg font-bold text-gray-900" x-text="cartTotal() + ' DA'"></span>
+                    <a href="/shop/beauty" class="group cursor-pointer flex-1 transition-all duration-1000 hover:flex-[2.5]">
+                        <div class="relative w-full h-full overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-1000">
+                            <img src="https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=800&h=1200&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Haircare">
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-1000"></div>
+                            <div class="absolute inset-0 flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                                <h3 class="text-2xl font-bold text-white uppercase tracking-wider">Haircare</h3>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="/shop/beauty" class="group cursor-pointer flex-1 transition-all duration-1000 hover:flex-[2.5]">
+                        <div class="relative w-full h-full overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-1000">
+                            <img src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&h=1200&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Aromatherapy">
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-1000"></div>
+                            <div class="absolute inset-0 flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                                <h3 class="text-2xl font-bold text-white uppercase tracking-wider">Aromatherapy</h3>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="/shop/beauty" class="group cursor-pointer flex-1 transition-all duration-1000 hover:flex-[2.5]">
+                        <div class="relative w-full h-full overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-1000">
+                            <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&h=1200&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Cosmetics">
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-1000"></div>
+                            <div class="absolute inset-0 flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                                <h3 class="text-2xl font-bold text-white uppercase tracking-wider">Cosmetics</h3>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="/shop/beauty" class="group cursor-pointer flex-1 transition-all duration-1000 hover:flex-[2.5]">
+                        <div class="relative w-full h-full overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-1000">
+                            <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&h=1200&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Wellness">
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-1000"></div>
+                            <div class="absolute inset-0 flex items-end justify-center pb-8 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+                                <h3 class="text-2xl font-bold text-white uppercase tracking-wider">Wellness</h3>
+                            </div>
+                        </div>
+                    </a>
+
                 </div>
-                <button @click="goToCheckout()" :disabled="cartItems.length === 0"
-                    :class="cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg transform hover:-translate-y-0.5'"
-                    class="w-full py-3 rounded-lg text-white font-semibold transition-all"
-                    style="background: linear-gradient(135deg, #8B3A3A, #722F37);">
-                    Checkout
-                </button>
             </div>
-        </div>
 
-        <!-- Search Modal -->
-        <div x-show="searchOpen" @click.away="searchOpen = false" x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20"
-            style="display: none;">
-            <div @click.stop class="bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-4">
-                <div class="p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        <input type="text" x-model="searchQuery" @input="performSearch"
-                            placeholder="Search for products..." class="flex-1 text-lg outline-none" autofocus>
-                        <button @click="searchOpen = false" class="text-gray-400 hover:text-gray-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="border-t pt-4 max-h-96 overflow-y-auto">
-                        <template x-if="searchQuery.length === 0">
-                            <p class="text-gray-400 text-center py-8">Start typing to search...</p>
-                        </template>
-                        <template x-if="searchQuery.length > 0 && searchResults.length === 0">
-                            <p class="text-gray-400 text-center py-8">No results found</p>
-                        </template>
-                        <template x-for="result in searchResults" :key="result.id">
-                            <a :href="`/shop/product/${result.slug}`"
-                                class="flex gap-4 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition">
-                                <img :src="result.image" :alt="result.name" class="w-16 h-16 object-cover rounded">
-                                <div>
-                                    <h4 class="font-semibold text-gray-800" x-text="result.name"></h4>
-                                    <p class="text-sm text-gray-600" x-text="result.price + ' DA'"></p>
+            <!-- Featured Beauty Products -->
+            <div class="py-20" id="featured-section-beauty">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-serif font-bold text-purple-900 mb-4">Featured Beauty Products</h2>
+                    <div class="h-1 w-20 bg-pink-500 mx-auto"></div>
+                </div>
+
+                @if($featuredProducts->where('type', 'beauty')->count() > 0)
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        @foreach($featuredProducts->where('type', 'beauty')->take(4) as $product)
+                            <a href="/shop/product/{{ $product->slug }}" class="group">
+                                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+                                    <div class="relative aspect-square overflow-hidden bg-gray-100">
+                                        @if($product->images->first())
+                                            <img src="{{ $product->images->first()->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                        @else
+                                            <div class="w-full h-full bg-gradient-to-br from-pink-50 to-purple-100 flex items-center justify-center">
+                                                <svg class="w-12 h-12 text-pink-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16z"/></svg>
+                                            </div>
+                                        @endif
+                                        <div class="absolute top-3 right-3 bg-pink-600 text-white px-3 py-1 rounded-full text-xs font-semibold">Featured</div>
+                                    </div>
+                                    <div class="p-4">
+                                        <h3 class="font-semibold text-gray-900 group-hover:text-pink-600 transition mb-2 truncate">{{ $product->name }}</h3>
+                                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $product->description }}</p>
+                                        <div class="flex justify-between items-center mt-3">
+                                            <p class="text-pink-600 font-bold text-lg">{{ number_format($product->price, 0) }} DA</p>
+                                            <div class="flex gap-2 z-20 relative">
+                                                <button @click.prevent="addToWishlist({{ $product->id }})" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 transition">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                                </button>
+                                                <button @click.prevent="addToCart({ id: {{ $product->id }}, name: '{{ addslashes($product->name) }}', price: {{ $product->price }}, image: '{{ $product->images->first()?->image_url ?? '' }}' })" class="w-8 h-8 rounded-full bg-pink-600 flex items-center justify-center text-white hover:bg-pink-700 transition shadow-md">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </a>
-                        </template>
+                        @endforeach
                     </div>
+                @else
+                    <div class="text-center py-12">
+                        <p class="text-gray-500 text-lg">No featured beauty products yet. Check back soon!</p>
+                    </div>
+                @endif
+            </div>
+
+            <!-- New Beauty Arrivals -->
+            <div class="py-20" id="new-arrivals-section-beauty">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-serif font-bold text-purple-900 mb-4">New Beauty Essentials</h2>
+                    <div class="h-1 w-20 bg-pink-500 mx-auto"></div>
+                </div>
+
+                @if($newProducts->where('type', 'beauty')->count() > 0)
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        @foreach($newProducts->where('type', 'beauty')->take(4) as $product)
+                            <a href="/shop/product/{{ $product->slug }}" class="group">
+                                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+                                    <div class="relative aspect-square overflow-hidden bg-gray-100">
+                                        @if($product->images->first())
+                                            <img src="{{ $product->images->first()->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                        @else
+                                            <div class="w-full h-full bg-gradient-to-br from-pink-50 to-purple-100 flex items-center justify-center">
+                                                <svg class="w-12 h-12 text-pink-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16z"/></svg>
+                                            </div>
+                                        @endif
+                                        <div class="absolute top-3 right-3 bg-purple-500 text-white px-3 py-1 rounded-full text-xs font-semibold">New</div>
+                                    </div>
+                                    <div class="p-4">
+                                        <h3 class="font-semibold text-gray-900 group-hover:text-pink-600 transition mb-2 truncate">{{ $product->name }}</h3>
+                                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $product->description }}</p>
+                                        <div class="flex justify-between items-center mt-3">
+                                            <p class="text-pink-600 font-bold text-lg">{{ number_format($product->price, 0) }} DA</p>
+                                            <div class="flex gap-2 z-20 relative">
+                                                <button @click.prevent="addToWishlist({{ $product->id }})" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 transition">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                                </button>
+                                                <button @click.prevent="addToCart({ id: {{ $product->id }}, name: '{{ addslashes($product->name) }}', price: {{ $product->price }}, image: '{{ $product->images->first()?->image_url ?? '' }}' })" class="w-8 h-8 rounded-full bg-pink-600 flex items-center justify-center text-white hover:bg-pink-700 transition shadow-md">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-12">
+                        <p class="text-gray-500 text-lg">No new beauty products yet. Check back soon!</p>
+                    </div>
+                @endif
+            </div>
+
+            <!-- ALL BEAUTY PRODUCTS SECTION -->
+            <div id="all-beauty-products" class="mt-20 scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-purple-900 mb-4">All Beauty Products</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">Browse our complete collection of natural beauty products</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @foreach(App\Models\Product::where('type', 'beauty')->with('images')->get() as $product)
+                        <a href="/shop/product/{{ $product->slug }}" class="group">
+                            <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+                                <div class="relative aspect-square overflow-hidden bg-gray-100">
+                                    @if($product->images->first())
+                                        <img src="{{ $product->images->first()->image_url }}" alt="{{ $product->name }}"
+                                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                    @else
+                                        <div class="w-full h-full bg-gradient-to-br from-purple-50 to-pink-100 flex items-center justify-center">
+                                            <svg class="w-12 h-12 text-purple-300" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 2a8 8 0 100 16 8 8 0 000-16z" />
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-gray-900 mb-2 group-hover:text-purple-700 transition-colors">
+                                        {{ $product->name }}
+                                    </h3>
+                                    <p class="text-purple-700 font-bold text-lg">{{ number_format((float)$product->price, 0) }} DA</p>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Side Cart -->
+    <div x-show="cartOpen" @click.away="cartOpen = false" x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0"
+        x-transition:leave-end="translate-x-full"
+        class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col" style="display: none;">
+
+        <div class="p-6 border-b flex justify-between items-center"
+            style="background: linear-gradient(135deg, #8B3A3A, #722F37);">
+            <h2 class="text-2xl font-bold text-white">Your Cart</h2>
+            <button @click="cartOpen = false" class="text-white hover:text-gray-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6">
+            <template x-if="cartItems.length === 0">
+                <div class="text-center py-12">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <p class="text-gray-500">Your cart is empty</p>
+                </div>
+            </template>
+
+            <template x-for="item in cartItems" :key="item.id">
+                <div class="flex gap-4 mb-4 p-4 border rounded-lg hover:shadow-md transition">
+                    <img :src="item.image" :alt="item.name" class="w-20 h-20 object-cover rounded">
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-800" x-text="item.name"></h3>
+                        <p class="text-sm text-gray-600" x-text="item.price + ' DA'"></p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <button @click="updateQuantity(item.id, -1)"
+                                class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
+                            <span x-text="item.quantity" class="px-3"></span>
+                            <button @click="updateQuantity(item.id, 1)"
+                                class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
+                            <button @click="removeFromCart(item.id)" class="ml-auto text-red-500 hover:text-red-700">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <div class="border-t p-6 bg-gray-50">
+            <div class="flex justify-between mb-4">
+                <span class="text-lg font-semibold text-gray-800">Total:</span>
+                <span class="text-lg font-bold text-gray-900" x-text="cartTotal() + ' DA'"></span>
+            </div>
+            <button @click="goToCheckout()" :disabled="cartItems.length === 0"
+                :class="cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg transform hover:-translate-y-0.5'"
+                class="w-full py-3 rounded-lg text-white font-semibold transition-all"
+                style="background: linear-gradient(135deg, #8B3A3A, #722F37);">
+                Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div x-show="searchOpen" @click.away="searchOpen = false" x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20" style="display: none;">
+        <div @click.stop class="bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-4">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input type="text" x-model="searchQuery" @input="performSearch" placeholder="Search for products..."
+                        class="flex-1 text-lg outline-none" autofocus>
+                    <button @click="searchOpen = false" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="border-t pt-4 max-h-96 overflow-y-auto">
+                    <template x-if="searchQuery.length === 0">
+                        <p class="text-gray-400 text-center py-8">Start typing to search...</p>
+                    </template>
+                    <template x-if="searchQuery.length > 0 && searchResults.length === 0">
+                        <p class="text-gray-400 text-center py-8">No results found</p>
+                    </template>
+                    <template x-for="result in searchResults" :key="result.id">
+                        <a :href="`/shop/product/${result.slug}`"
+                            class="flex gap-4 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition">
+                            <img :src="result.image" :alt="result.name" class="w-16 h-16 object-cover rounded">
+                            <div>
+                                <h4 class="font-semibold text-gray-800" x-text="result.name"></h4>
+                                <p class="text-sm text-gray-600" x-text="result.price + ' DA'"></p>
+                            </div>
+                        </a>
+                    </template>
                 </div>
             </div>
         </div>
+    </div>
 
-        @include('partials.login-modal')
+    @include('partials.login-modal')
 
-        <!-- Toast Notification -->
-        <div id="toast-notification" style="
+    <!-- Toast Notification -->
+    <div id="toast-notification" style="
         display: none;
         position: fixed;
         top: 20px;
@@ -608,179 +907,179 @@
         transform: translateX(400px);
         transition: transform 0.3s ease;
     ">
-            <p id="notification-message" style="margin: 0; color: #1f2937; font-weight: 500;"></p>
-        </div>
+        <p id="notification-message" style="margin: 0; color: #1f2937; font-weight: 500;"></p>
+    </div>
 
-        <style>
-            #toast-notification.show {
-                transform: translateX(0);
-            }
-        </style>
+    <style>
+        #toast-notification.show {
+            transform: translateX(0);
+        }
+    </style>
 
-        <script>
-            function shopStore() {
-                return {
-                    currentMode: 'spice',
-                    cartOpen: false,
-                    searchOpen: false,
-                    cartItems: @js(array_values(session('cart', []))),
-                    searchQuery: '',
-                    searchResults: [],
-                    searchTimeout: null,
+    <script>
+        function shopStore() {
+            return {
+                currentMode: 'spice',
+                cartOpen: false,
+                searchOpen: false,
+                cartItems: @js(array_values(session('cart', []))),
+                searchQuery: '',
+                searchResults: [],
+                searchTimeout: null,
 
-                    switchMode(mode) {
-                        this.currentMode = mode;
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    },
+                switchMode(mode) {
+                    this.currentMode = mode;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                },
 
-                    cartTotal() {
-                        return this.cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
-                    },
+                cartTotal() {
+                    return this.cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+                },
 
-                    updateQuantity(id, delta) {
-                        const item = this.cartItems.find(i => i.id == id);
-                        if (item) {
-                            item.quantity += delta;
-                            if (item.quantity <= 0) {
-                                this.removeFromCart(id);
-                            }
+                updateQuantity(id, delta) {
+                    const item = this.cartItems.find(i => i.id == id);
+                    if (item) {
+                        item.quantity += delta;
+                        if (item.quantity <= 0) {
+                            this.removeFromCart(id);
                         }
-                    },
+                    }
+                },
 
-                    removeFromCart(id) {
-                        this.cartItems = this.cartItems.filter(i => i.id != id);
-                    },
+                removeFromCart(id) {
+                    this.cartItems = this.cartItems.filter(i => i.id != id);
+                },
 
-                    addToCart(product) {
-                        const formData = new FormData();
-                        formData.append('product_id', product.id);
-                        formData.append('price', product.price);
-                        formData.append('quantity', 1);
+                addToCart(product) {
+                    const formData = new FormData();
+                    formData.append('product_id', product.id);
+                    formData.append('price', product.price);
+                    formData.append('quantity', 1);
 
-                        fetch('/cart/add', {
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                                'Accept': 'application/json'
+                    fetch('/cart/add', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            console.log('Cart updated:', data);
+                            if (data.status === 'success' && data.item) {
+                                const existingIdx = this.cartItems.findIndex(i => i.id == data.item.id);
+                                if (existingIdx > -1) {
+                                    this.cartItems[existingIdx].quantity = parseInt(data.item.quantity);
+                                } else {
+                                    this.cartItems.push(data.item);
+                                }
+                                this.cartOpen = true;
+                                this.showNotification('تمت إضافة المنتج إلى السلة', 'success');
                             }
                         })
-                            .then(res => res.json())
-                            .then(data => {
-                                console.log('Cart updated:', data);
-                                if (data.status === 'success' && data.item) {
-                                    const existingIdx = this.cartItems.findIndex(i => i.id == data.item.id);
-                                    if (existingIdx > -1) {
-                                        this.cartItems[existingIdx].quantity = parseInt(data.item.quantity);
-                                    } else {
-                                        this.cartItems.push(data.item);
-                                    }
-                                    this.cartOpen = true;
-                                    this.showNotification('تمت إضافة المنتج إلى السلة', 'success');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Cart update failed:', error);
-                                this.showNotification('فشل تحديث السلة', 'error');
-                            });
-                    },
+                        .catch(error => {
+                            console.error('Cart update failed:', error);
+                            this.showNotification('فشل تحديث السلة', 'error');
+                        });
+                },
 
-                    addToWishlist(id) {
-                        fetch('/wishlist/add', {
-                            method: 'POST',
-                            body: JSON.stringify({ product_id: id }),
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                                'Accept': 'application/json'
+                addToWishlist(id) {
+                    fetch('/wishlist/add', {
+                        method: 'POST',
+                        body: JSON.stringify({ product_id: id }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    })
+                        .then(res => {
+                            if (res.status === 401) {
+                                window.dispatchEvent(new CustomEvent('open-login-modal'));
+                                return null;
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (data) {
+                                this.showNotification(data.message, data.status === 'success' ? 'success' : 'error');
                             }
                         })
-                            .then(res => {
-                                if (res.status === 401) {
-                                    window.dispatchEvent(new CustomEvent('open-login-modal'));
-                                    return null;
-                                }
-                                return res.json();
-                            })
-                            .then(data => {
-                                if (data) {
-                                    this.showNotification(data.message, data.status === 'success' ? 'success' : 'error');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                // Only show error if it wasn't a 401 (which returns null)
-                                if (error) {
-                                    this.showNotification('حدث خطأ أثناء إضافة المنتج', 'error');
-                                }
-                            });
-                    },
-
-                    performSearch() {
-                        // Clear previous timeout
-                        if (this.searchTimeout) {
-                            clearTimeout(this.searchTimeout);
-                        }
-
-                        // Debounce search - wait 300ms after user stops typing
-                        this.searchTimeout = setTimeout(() => {
-                            if (this.searchQuery.length < 2) {
-                                this.searchResults = [];
-                                return;
+                        .catch(error => {
+                            console.error('Error:', error);
+                            // Only show error if it wasn't a 401 (which returns null)
+                            if (error) {
+                                this.showNotification('حدث خطأ أثناء إضافة المنتج', 'error');
                             }
+                        });
+                },
 
-                            // Call actual API
-                            fetch(`/api/search?q=${encodeURIComponent(this.searchQuery)}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    this.searchResults = data;
-                                })
-                                .catch(error => {
-                                    console.error('Search error:', error);
-                                    this.searchResults = [];
-                                });
-                        }, 300);
-                    },
+                performSearch() {
+                    // Clear previous timeout
+                    if (this.searchTimeout) {
+                        clearTimeout(this.searchTimeout);
+                    }
 
-                    showNotification(message, type) {
-                        const notification = document.getElementById('toast-notification');
-                        const notificationMessage = document.getElementById('notification-message');
-                        notificationMessage.textContent = message;
-
-                        if (type === 'success') {
-                            notification.style.borderLeftColor = '#10b981';
-                        } else {
-                            notification.style.borderLeftColor = '#ef4444';
-                        }
-
-                        notification.style.display = 'block';
-                        // Force reflow
-                        void notification.offsetWidth;
-                        notification.classList.add('show');
-
-                        setTimeout(() => {
-                            this.hideNotification();
-                        }, 3000);
-                    },
-
-                    hideNotification() {
-                        const notification = document.getElementById('toast-notification');
-                        notification.classList.remove('show');
-                        setTimeout(() => {
-                            notification.style.display = 'none';
-                        }, 300);
-                    },
-
-                    goToCheckout() {
-                        if (this.cartItems.length === 0) {
-                            this.showNotification('السلة فارغة', 'error');
+                    // Debounce search - wait 300ms after user stops typing
+                    this.searchTimeout = setTimeout(() => {
+                        if (this.searchQuery.length < 2) {
+                            this.searchResults = [];
                             return;
                         }
-                        window.location.href = '/checkout';
+
+                        // Call actual API
+                        fetch(`/api/search?q=${encodeURIComponent(this.searchQuery)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                this.searchResults = data;
+                            })
+                            .catch(error => {
+                                console.error('Search error:', error);
+                                this.searchResults = [];
+                            });
+                    }, 300);
+                },
+
+                showNotification(message, type) {
+                    const notification = document.getElementById('toast-notification');
+                    const notificationMessage = document.getElementById('notification-message');
+                    notificationMessage.textContent = message;
+
+                    if (type === 'success') {
+                        notification.style.borderLeftColor = '#10b981';
+                    } else {
+                        notification.style.borderLeftColor = '#ef4444';
                     }
+
+                    notification.style.display = 'block';
+                    // Force reflow
+                    void notification.offsetWidth;
+                    notification.classList.add('show');
+
+                    setTimeout(() => {
+                        this.hideNotification();
+                    }, 3000);
+                },
+
+                hideNotification() {
+                    const notification = document.getElementById('toast-notification');
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        notification.style.display = 'none';
+                    }, 300);
+                },
+
+                goToCheckout() {
+                    if (this.cartItems.length === 0) {
+                        this.showNotification('السلة فارغة', 'error');
+                        return;
+                    }
+                    window.location.href = '/checkout';
                 }
             }
-        </script>
+        }
+    </script>
 </body>
 
 </html>

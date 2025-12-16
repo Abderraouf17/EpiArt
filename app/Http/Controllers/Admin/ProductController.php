@@ -35,6 +35,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'is_featured' => 'boolean',
+            'is_new' => 'boolean',
             'image_urls.*' => 'nullable|url',
             'image_files.*' => 'nullable|image|max:2048',
             'variants.*.type' => 'nullable|in:size,color,quantity',
@@ -44,10 +45,11 @@ class ProductController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_featured'] = $request->has('is_featured');
-        
+        $validated['is_new'] = $request->has('is_new');
+
         $imageUrls = $request->input('image_urls', []);
         $imageFiles = $request->file('image_files', []);
-        
+
         if (count($imageUrls) + count($imageFiles) > 3) {
             return back()->withErrors(['image_files' => 'لا يمكن إضافة أكثر من 3 صور للمنتج']);
         }
@@ -55,7 +57,7 @@ class ProductController extends Controller
         $product = Product::create($validated);
 
         // Handle image URLs and file uploads
-        
+
         $index = 0;
         foreach ($imageUrls as $i => $url) {
             if (!empty($url)) {
@@ -66,7 +68,7 @@ class ProductController extends Controller
                 ]);
             }
         }
-        
+
         foreach ($imageFiles as $file) {
             if ($file) {
                 $path = $file->store('products', 'public');
@@ -115,6 +117,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'is_featured' => 'boolean',
+            'is_new' => 'boolean',
             'image_urls.*' => 'nullable|url',
             'image_files' => 'nullable|array',
             'image_files.*' => 'nullable|image|max:2048',
@@ -125,12 +128,13 @@ class ProductController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_featured'] = $request->has('is_featured');
-        
+        $validated['is_new'] = $request->has('is_new');
+
         // Check image limit
         $currentImagesCount = $product->images()->count();
         $newImageUrls = $request->input('image_urls', []);
         $newImageFiles = $request->file('image_files', []);
-        
+
         if ($currentImagesCount + count($newImageUrls) + count($newImageFiles) > 3) {
             return back()->withErrors(['image_files' => 'لا يمكن إضافة أكثر من 3 صور للمنتج']);
         }
@@ -139,10 +143,10 @@ class ProductController extends Controller
 
         // Handle images - append new ones
         $index = $product->images()->count();
-        
+
         $imageUrls = $request->input('image_urls', []);
         $imageFiles = $request->file('image_files', []);
-        
+
         foreach ($imageUrls as $i => $url) {
             if (!empty($url)) {
                 ProductImage::create([
@@ -152,7 +156,7 @@ class ProductController extends Controller
                 ]);
             }
         }
-        
+
         foreach ($imageFiles as $file) {
             if ($file) {
                 $path = $file->store('products', 'public');
@@ -167,7 +171,7 @@ class ProductController extends Controller
 
         // Handle variants - delete old ones and add new ones
         $product->variations()->delete();
-        
+
         if ($request->has('variants')) {
             foreach ($request->variants as $variantData) {
                 if (!empty($variantData['type']) && !empty($variantData['value'])) {

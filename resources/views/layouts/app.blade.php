@@ -28,7 +28,7 @@
 
 <body class="font-sans antialiased" x-data="shopStore()" @add-to-cart.window="addToCart($event.detail)"
     @show-notification.window="showNotification($event.detail.message, $event.detail.type)"
-    @buy-now.window="buyNow($event.detail)">
+    @buy-now.window="buyNow($event.detail)" x-init="$store.shopMode = { currentMode: 'spice' }">
     <div class="min-h-screen bg-gray-100">
         @include('layouts.navigation')
 
@@ -120,28 +120,24 @@
     </div>
 
     <!-- Search Modal -->
-    <div x-show="searchOpen" 
-         @click.away="searchOpen = false"
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20"
-         style="display: none;">
+    <div x-show="searchOpen" @click.away="searchOpen = false" x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20" style="display: none;">
         <div @click.stop class="bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-4">
             <div class="p-6">
                 <div class="flex items-center gap-3 mb-4">
                     <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    <input type="text" x-model="searchQuery" @input="performSearch"
-                           placeholder="Search for products..."
-                           class="flex-1 text-lg outline-none" autofocus>
+                    <input type="text" x-model="searchQuery" @input="performSearch" placeholder="Search for products..."
+                        class="flex-1 text-lg outline-none" autofocus>
                     <button @click="searchOpen = false" class="text-gray-400 hover:text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
@@ -153,7 +149,8 @@
                         <p class="text-gray-400 text-center py-8">No results found</p>
                     </template>
                     <template x-for="result in searchResults" :key="result.id">
-                        <a :href="`/shop/product/${result.slug}`" class="flex gap-4 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition">
+                        <a :href="`/shop/product/${result.slug}`"
+                            class="flex gap-4 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition">
                             <img :src="result.image" :alt="result.name" class="w-16 h-16 object-cover rounded">
                             <div>
                                 <h4 class="font-semibold text-gray-800" x-text="result.name"></h4>
