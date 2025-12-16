@@ -16,12 +16,14 @@ use Illuminate\Support\Facades\Route;
 
 // Public Routes
 Route::get('/', [WelcomeController::class, 'index']);
+Route::get('/beauty', [WelcomeController::class, 'beauty'])->name('beauty');
 
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/category/{category}', [ShopController::class, 'category'])->name('shop.category');
 Route::get('/shop/product/{product:slug}', [ShopController::class, 'show'])->name('shop.product');
 Route::get('/shop/search', [ShopController::class, 'search'])->name('shop.search');
+Route::get('/api/search', [ShopController::class, 'apiSearch'])->name('api.search');
 
 // Cart Routes (public - no auth required)
 Route::get('/cart', [CartController::class, 'view'])->name('cart.view');

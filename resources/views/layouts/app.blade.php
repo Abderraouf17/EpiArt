@@ -119,6 +119,53 @@
         </div>
     </div>
 
+    <!-- Search Modal -->
+    <div x-show="searchOpen" 
+         @click.away="searchOpen = false"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20"
+         style="display: none;">
+        <div @click.stop class="bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-4">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" x-model="searchQuery" @input="performSearch"
+                           placeholder="Search for products..."
+                           class="flex-1 text-lg outline-none" autofocus>
+                    <button @click="searchOpen = false" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="border-t pt-4 max-h-96 overflow-y-auto">
+                    <template x-if="searchQuery.length === 0">
+                        <p class="text-gray-400 text-center py-8">Start typing to search...</p>
+                    </template>
+                    <template x-if="searchQuery.length > 0 && searchResults.length === 0">
+                        <p class="text-gray-400 text-center py-8">No results found</p>
+                    </template>
+                    <template x-for="result in searchResults" :key="result.id">
+                        <a :href="`/shop/product/${result.slug}`" class="flex gap-4 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition">
+                            <img :src="result.image" :alt="result.name" class="w-16 h-16 object-cover rounded">
+                            <div>
+                                <h4 class="font-semibold text-gray-800" x-text="result.name"></h4>
+                                <p class="text-sm text-gray-600" x-text="result.price + ' DA'"></p>
+                            </div>
+                        </a>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast-notification" style="
             display: none;
@@ -152,8 +199,12 @@
             return {
                 open: false,
                 cartOpen: false,
+                searchOpen: false,
                 cartItems: @json(array_values(session('cart', []))),
                 wishlistCount: @json(Auth::check() ? Auth::user()->wishlists()->count() : 0),
+                searchQuery: '',
+                searchResults: [],
+                searchTimeout: null,
 
                 cartTotal() {
                     return this.cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
@@ -267,6 +318,32 @@
                             notification.style.display = 'none';
                         }, 300);
                     }
+                },
+
+                performSearch() {
+                    // Clear previous timeout
+                    if (this.searchTimeout) {
+                        clearTimeout(this.searchTimeout);
+                    }
+
+                    // Debounce search - wait 300ms after user stops typing
+                    this.searchTimeout = setTimeout(() => {
+                        if (this.searchQuery.length < 2) {
+                            this.searchResults = [];
+                            return;
+                        }
+
+                        // Call actual API
+                        fetch(`/api/search?q=${encodeURIComponent(this.searchQuery)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                this.searchResults = data;
+                            })
+                            .catch(error => {
+                                console.error('Search error:', error);
+                                this.searchResults = [];
+                            });
+                    }, 300);
                 },
 
                 goToCheckout() {

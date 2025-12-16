@@ -29,4 +29,9 @@ class Category extends Model
     {
         return $this->belongsTo(Product::class, 'featured_product_id');
     }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }

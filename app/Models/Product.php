@@ -15,6 +15,7 @@ class Product extends Model
         'description',
         'price',
         'category_id',
+        'stock',
         'is_featured',
         'display_order',
     ];
@@ -45,7 +46,7 @@ class Product extends Model
     {
         $slug = \Illuminate\Support\Str::slug($name);
         $count = static::where('slug', 'LIKE', "{$slug}%")->count();
-        
+
         return $count ? "{$slug}-{$count}" : $slug;
     }
 
