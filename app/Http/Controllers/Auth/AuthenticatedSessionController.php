@@ -36,6 +36,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Sync cart from database
+        app(\App\Http\Controllers\CartController::class)->syncCart();
+
         // Redirect based on user role
         $user = Auth::user();
         if ($user && $user->is_admin) {

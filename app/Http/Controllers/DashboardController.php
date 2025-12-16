@@ -41,6 +41,15 @@ class DashboardController extends Controller
 
     public function addToWishlist(Request $request)
     {
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'يجب تسجيل الدخول لإضافة المنتجات إلى قائمة المفضلة',
+                'requiresAuth' => true
+            ], 401);
+        }
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
         ]);

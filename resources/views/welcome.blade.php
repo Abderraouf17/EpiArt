@@ -550,6 +550,8 @@
         </div>
     </div>
 
+    @include('partials.login-modal')
+
     <!-- Toast Notification -->
     <div id="toast-notification" style="
         display: none;
@@ -647,15 +649,28 @@
                         body: JSON.stringify({ product_id: id }),
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
                         }
                     })
-                    .then(res => res.json())
+                    .then(res => {
+                        if (res.status === 401) {
+                            window.dispatchEvent(new CustomEvent('open-login-modal'));
+                            return null;
+                        }
+                        return res.json();
+                    })
                     .then(data => {
-                        this.showNotification(data.message, 'success');
+                        if (data) {
+                            this.showNotification(data.message, data.status === 'success' ? 'success' : 'error');
+                        }
                     })
                     .catch(error => {
-                        this.showNotification('يجب تسجيل الدخول لإضافة للمفضلة', 'error');
+                        console.error('Error:', error);
+                        // Only show error if it wasn't a 401 (which returns null)
+                        if (error) {
+                            this.showNotification('حدث خطأ أثناء إضافة المنتج', 'error');
+                        }
                     });
                 },
 
