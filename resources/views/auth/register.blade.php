@@ -1,65 +1,89 @@
 <x-guest-layout>
-    <div style="min-height: 100vh; display: flex; margin: 0; padding: 0;">
-        <!-- Left Side: Image -->
-        <div style="width: 50%; background: linear-gradient(135deg, rgba(139, 58, 58, 0.9), rgba(114, 47, 55, 0.9)), url(/images/EpiArt-story.png) center/cover; color: white; display: flex; flex-direction: column; justify-content: flex-end; padding: 3rem; margin: 0;">
-            <a href="/" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: white; margin-bottom: 2rem;">
-                <img src="/logo/logo-main.png" alt="EpiArt" style="width: 80px; height: 80px;">
-                <span style="font-size: 2rem; font-weight: bold;">EpiArt</span>
-            </a>
-            <h2 style="font-size: 2.25rem; font-weight: bold; margin-bottom: 1rem;">Join Our Community</h2>
-            <p style="font-size: 1.125rem; color: #fef3c7; max-width: 28rem; line-height: 1.6;">Create your account and start enjoying premium spices with exclusive member benefits. Become part of the EpiArt family.</p>
+    <div class="min-h-screen flex m-0 p-0">
+        <!-- Left Side: Image (Hidden on Mobile) -->
+        <div
+            class="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#8B3A3A]/90 to-[#722F37]/90 text-white flex-col justify-end p-8 lg:p-12 m-0 relative">
+            <div class="absolute inset-0 bg-cover bg-center"
+                style="background-image: url(/images/EpiArt-story.png); z-index: -1;"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-[#8B3A3A]/90 to-[#722F37]/90" style="z-index: 0;"></div>
+
+            <div class="relative z-10">
+                <a href="/" class="flex items-center gap-3 text-white no-underline mb-8">
+                    <img src="/logo/logo-main.png" alt="EpiArt" class="w-16 h-16 lg:w-20 lg:h-20">
+                    <span class="text-3xl lg:text-4xl font-bold">EpiArt</span>
+                </a>
+                <h2 class="text-3xl lg:text-4xl font-bold mb-4">Join Our Community</h2>
+                <p class="text-base lg:text-lg text-yellow-100 max-w-md leading-relaxed">Create your account and start
+                    enjoying premium spices with exclusive member benefits. Become part of the EpiArt family.</p>
+            </div>
         </div>
 
-        <!-- Right Side: Form -->
-        <div style="width: 50%; display: flex; flex-direction: column; justify-content: center; padding: 2rem; background: #fafafa; overflow-y: auto; margin: 0;">
-            <div style="width: 100%; max-width: 28rem; margin: 0 auto;">
-                <div style="text-align: center; margin-bottom: 2.5rem;">
-                    <a href="/" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; margin-bottom: 1.5rem;">
-                        <img src="/logo/logo-main.png" alt="EpiArt" style="height: 40px;">
-                        <span style="font-size: 1.5rem; font-weight: bold; color: #8B3A3A;">EpiArt</span>
+        <!-- Right Side: Form (Full Width on Mobile) -->
+        <div class="w-full md:w-1/2 flex flex-col justify-center p-4 sm:p-6 md:p-8 bg-gray-50 overflow-y-auto m-0">
+            <div class="w-full max-w-md mx-auto">
+                <!-- Mobile Logo (Visible only on mobile) -->
+                <div class="md:hidden text-center mb-6">
+                    <a href="/" class="inline-flex items-center gap-2 no-underline">
+                        <img src="/logo/logo-main.png" alt="EpiArt" class="h-12">
+                        <span class="text-2xl font-bold text-[#8B3A3A]">EpiArt</span>
                     </a>
-                    <h2 style="font-size: 1.875rem; font-weight: 700; color: #8B3A3A; margin: 0; margin-top: 0.5rem;">Create Account</h2>
-                    <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">Fill in your details to get started</p>
                 </div>
 
-                <form method="POST" action="{{ route('register') }}" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="text-center mb-8 md:mb-10">
+                    <a href="/" class="hidden md:inline-flex items-center gap-2 no-underline mb-6">
+                        <img src="/logo/logo-main.png" alt="EpiArt" class="h-10">
+                        <span class="text-2xl font-bold text-[#8B3A3A]">EpiArt</span>
+                    </a>
+                    <h2 class="text-2xl md:text-3xl font-bold text-[#8B3A3A] mt-2">Create Account</h2>
+                    <p class="mt-2 text-sm text-gray-600">Fill in your details to get started</p>
+                </div>
+
+                <form method="POST" action="{{ route('register') }}" class="flex flex-col gap-4 md:gap-5">
                     @csrf
 
                     <!-- Name -->
                     <div>
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Full Name</label>
-                        <input type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 1rem; box-sizing: border-box;">
-                        @error('name') <span style="color: #dc2626; font-size: 0.875rem;">{{ $message }}</span> @enderror
+                        <label class="block font-semibold mb-2 text-gray-700 text-sm md:text-base">Full Name</label>
+                        <input type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name"
+                            class="w-full px-3 md:px-4 py-3 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-[#8B3A3A] focus:border-transparent transition">
+                        @error('name') <span class="text-red-600 text-sm mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
                     <!-- Email Address -->
                     <div>
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Email Address</label>
-                        <input type="email" name="email" value="{{ old('email') }}" required autocomplete="username" style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 1rem; box-sizing: border-box;">
-                        @error('email') <span style="color: #dc2626; font-size: 0.875rem;">{{ $message }}</span> @enderror
+                        <label class="block font-semibold mb-2 text-gray-700 text-sm md:text-base">Email Address</label>
+                        <input type="email" name="email" value="{{ old('email') }}" required autocomplete="username"
+                            class="w-full px-3 md:px-4 py-3 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-[#8B3A3A] focus:border-transparent transition">
+                        @error('email') <span class="text-red-600 text-sm mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
                     <!-- Password -->
                     <div>
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Password</label>
-                        <input type="password" name="password" required autocomplete="new-password" style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 1rem; box-sizing: border-box;">
-                        @error('password') <span style="color: #dc2626; font-size: 0.875rem;">{{ $message }}</span> @enderror
+                        <label class="block font-semibold mb-2 text-gray-700 text-sm md:text-base">Password</label>
+                        <input type="password" name="password" required autocomplete="new-password"
+                            class="w-full px-3 md:px-4 py-3 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-[#8B3A3A] focus:border-transparent transition">
+                        @error('password') <span class="text-red-600 text-sm mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
                     <!-- Confirm Password -->
                     <div>
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Confirm Password</label>
-                        <input type="password" name="password_confirmation" required autocomplete="new-password" style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 1rem; box-sizing: border-box;">
-                        @error('password_confirmation') <span style="color: #dc2626; font-size: 0.875rem;">{{ $message }}</span> @enderror
+                        <label class="block font-semibold mb-2 text-gray-700 text-sm md:text-base">Confirm
+                            Password</label>
+                        <input type="password" name="password_confirmation" required autocomplete="new-password"
+                            class="w-full px-3 md:px-4 py-3 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-[#8B3A3A] focus:border-transparent transition">
+                        @error('password_confirmation') <span
+                        class="text-red-600 text-sm mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
-                    <button type="submit" style="width: 100%; padding: 0.75rem; background: #8B3A3A; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 1rem;">
+                    <button type="submit"
+                        class="w-full py-3 md:py-3.5 bg-[#8B3A3A] text-white border-none rounded-lg font-semibold cursor-pointer transition-all hover:bg-[#722F37] text-base md:text-lg shadow-md hover:shadow-lg mt-2">
                         Create Account
                     </button>
 
-                    <div style="text-align: center;">
-                        <span style="color: #6b7280; font-size: 0.875rem;">Already have an account?</span>
-                        <a href="{{ route('login') }}" style="color: #8B3A3A; text-decoration: none; font-weight: 600; margin-left: 0.25rem;">Sign In</a>
+                    <div class="text-center">
+                        <span class="text-gray-600 text-sm">Already have an account?</span>
+                        <a href="{{ route('login') }}"
+                            class="text-[#8B3A3A] no-underline font-semibold ml-1 hover:text-[#722F37]">Sign In</a>
                     </div>
                 </form>
             </div>

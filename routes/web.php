@@ -36,6 +36,7 @@ Route::get('/order/success/{order}', [CartController::class, 'orderSuccess'])->n
 
 // Wishlist (public add for guest check)
 Route::post('/wishlist/add', [DashboardController::class, 'addToWishlist'])->name('wishlist.add');
+Route::get('/wishlist/ids', [DashboardController::class, 'getWishlistIds'])->name('wishlist.ids');
 
 // User Dashboard (requires auth)
 Route::middleware('auth')->group(function () {

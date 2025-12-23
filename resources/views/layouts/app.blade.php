@@ -309,10 +309,32 @@
                 searchOpen: false,
                 showConfirmModal: false,
                 cartItems: @json(array_values(session('cart', []))),
-                wishlistCount: @json(Auth::check() ? Auth::user()->wishlists()->count() : 0),
+                wishlistItems: [],
+                wishlistCount: 0,
                 searchQuery: '',
                 searchResults: [],
                 searchTimeout: null,
+
+                init() {
+                    // Load wishlist on page load
+                    this.loadWishlist();
+                },
+
+                loadWishlist() {
+                    fetch('/wishlist/ids')
+                        .then(res => res.json())
+                        .then(data => {
+                            this.wishlistItems = data.ids || [];
+                            this.wishlistCount = data.count || 0;
+                        })
+                        .catch(error => {
+                            console.error('Failed to load wishlist:', error);
+                        });
+                },
+
+                isInWishlist(productId) {
+                    return this.wishlistItems.includes(productId);
+                },
 
                 cartTotal() {
                     return this.cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
@@ -372,6 +394,46 @@
                         .catch(error => {
                             console.error('Error clearing cart:', error);
                             this.showNotification('فشل في إفراغ السلة', 'error');
+                        });
+                },
+
+                addToWishlist(id) {
+                    fetch('/wishlist/add', {
+                        method: 'POST',
+                        body: JSON.stringify({ product_id: id }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    })
+                        .then(res => {
+                            if (res.status === 401) {
+                                window.dispatchEvent(new CustomEvent('open-login-modal'));
+                                return null;
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (data) {
+                                // Update wishlist state
+                                if (data.inWishlist) {
+                                    if (!this.wishlistItems.includes(id)) {
+                                        this.wishlistItems.push(id);
+                                    }
+                                } else {
+                                    this.wishlistItems = this.wishlistItems.filter(itemId => itemId !== id);
+                                }
+                                
+                                this.wishlistCount = data.count || 0;
+                                this.showNotification(data.message, data.status === 'success' ? 'success' : 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            if (error) {
+                                this.showNotification('حدث خطأ أثناء تحديث المفضلة', 'error');
+                            }
                         });
                 },
 

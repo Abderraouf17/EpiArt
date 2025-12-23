@@ -54,14 +54,17 @@ class DashboardController extends Controller
             'product_id' => 'required|exists:products,id',
         ]);
 
-        $exists = Wishlist::where('user_id', Auth::id())
+        $wishlistItem = Wishlist::where('user_id', Auth::id())
             ->where('product_id', $request->product_id)
-            ->exists();
+            ->first();
 
-        if ($exists) {
+        // Toggle logic: if exists, remove it; if not, add it
+        if ($wishlistItem) {
+            $wishlistItem->delete();
             return response()->json([
-                'status' => 'error',
-                'message' => 'المنتج موجود بالفعل في قائمتك المفضلة',
+                'status' => 'success',
+                'message' => 'تم إزالة المنتج من قائمتك المفضلة',
+                'inWishlist' => false,
                 'count' => Auth::user()->wishlists()->count()
             ]);
         }
@@ -74,6 +77,7 @@ class DashboardController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'تمت إضافة المنتج إلى قائمتك المفضلة',
+            'inWishlist' => true,
             'count' => Auth::user()->wishlists()->count()
         ]);
     }
@@ -93,6 +97,24 @@ class DashboardController extends Controller
         }
 
         return back()->with('success', 'تم إزالة المنتج من قائمتك المفضلة');
+    }
+
+
+    public function getWishlistIds()
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'ids' => [],
+                'count' => 0
+            ]);
+        }
+
+        $ids = Auth::user()->wishlists()->pluck('product_id')->toArray();
+
+        return response()->json([
+            'ids' => $ids,
+            'count' => count($ids)
+        ]);
     }
 
     public function cancelOrder(Order $order)

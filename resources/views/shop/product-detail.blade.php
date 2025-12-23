@@ -25,8 +25,8 @@
                     @endif
                     
                     <!-- Wishlist Button (Mobile/Desktop overlay) -->
-                    <button id="wishlist-btn-overlay" class="absolute top-4 right-4 p-3 rounded-full bg-white/90 backdrop-blur-sm shadow-lg text-[#8B3A3A] hover:bg-[#8B3A3A] hover:text-white transition-all duration-300 group-hover:opacity-100 opacity-0 transform translate-y-2 group-hover:translate-y-0" title="Add to Wishlist">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button id="wishlist-btn-overlay" class="absolute top-4 right-4 p-3 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-[#8B3A3A] hover:text-white transition-all duration-300" title="Add to Wishlist">
+                        <svg id="wishlist-icon" class="w-6 h-6 text-[#8B3A3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                     </button>
@@ -261,10 +261,34 @@
 
         // Wishlist button (Overlay)
         const wishlistBtn = document.getElementById('wishlist-btn-overlay');
+        const wishlistIcon = document.getElementById('wishlist-icon');
+        let isInWishlist = false;
+
+        // Check if product is in wishlist on load
+        fetch('/wishlist/ids')
+            .then(res => res.json())
+            .then(data => {
+                const wishlistIds = data.ids || [];
+                isInWishlist = wishlistIds.includes(productIdVal);
+                updateWishlistIcon();
+            });
+
+        function updateWishlistIcon() {
+            if (isInWishlist) {
+                wishlistIcon.setAttribute('fill', 'currentColor');
+                wishlistBtn.classList.add('text-red-500');
+                wishlistBtn.classList.remove('text-[#8B3A3A]');
+            } else {
+                wishlistIcon.setAttribute('fill', 'none');
+                wishlistBtn.classList.remove('text-red-500');
+                wishlistBtn.classList.add('text-[#8B3A3A]');
+            }
+        }
+
         if (wishlistBtn) {
             wishlistBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                e.stopPropagation(); // prevent image click check
+                e.stopPropagation();
                 addToWishlist(productIdVal);
             });
         }
@@ -288,6 +312,26 @@
             })
             .then(data => {
                 if (data) {
+                    // Update local state
+                    isInWishlist = data.inWishlist;
+                    updateWishlistIcon();
+                    
+                    // Update navbar count if shopStore exists
+                    if (window.Alpine && window.Alpine.store) {
+                        const store = document.querySelector('[x-data]').__x.$data;
+                        if (store) {
+                            store.wishlistCount = data.count || 0;
+                            if (data.inWishlist) {
+                                if (!store.wishlistItems.includes(productId)) {
+                                    store.wishlistItems.push(productId);
+                                }
+                            } else {
+                                store.wishlistItems = store.wishlistItems.filter(id => id !== productId);
+                            }
+                        }
+                    }
+                    
+                    // Show notification
                     window.dispatchEvent(new CustomEvent('show-notification', {
                         detail: {
                             message: data.message,

@@ -53,7 +53,7 @@ class ShopController extends Controller
         }
 
         // Get all products for fuzzy matching
-        $allProducts = Product::with('images')->get();
+        $allProducts = Product::with(['images', 'category'])->get();
         $results = [];
 
         foreach ($allProducts as $product) {
@@ -68,12 +68,28 @@ class ShopController extends Controller
 
             // Accept if exact match or close match (distance <= 3 for typos)
             if ($contains || $distance <= 3) {
+                // Determine category type based on category name
+                $categoryType = 'spice'; // default
+                if ($product->category) {
+                    $categoryName = strtolower($product->category->name);
+                    if (
+                        strpos($categoryName, 'beauty') !== false ||
+                        strpos($categoryName, 'cosmetic') !== false ||
+                        strpos($categoryName, 'skincare') !== false ||
+                        strpos($categoryName, 'makeup') !== false
+                    ) {
+                        $categoryType = 'beauty';
+                    }
+                }
+
                 $results[] = [
                     'id' => $product->id,
                     'name' => $product->name,
                     'price' => number_format((float) $product->price, 0),
                     'image' => $product->images->first()?->image_url ?? '/images/placeholder.jpg',
                     'slug' => $product->slug,
+                    'category' => $product->category?->name ?? 'Uncategorized',
+                    'category_type' => $categoryType,
                     'relevance' => $contains ? 0 : $distance // Lower is better
                 ];
             }
