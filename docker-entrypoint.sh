@@ -5,8 +5,9 @@ set -e
 echo "🚀 Running database migrations..."
 php artisan migrate --force
 
-# Seed database if it's the first time (optional, commented out by default to prevent duplication)
-# php artisan db:seed --force
+# Seed database (Force run to ensure admin exists)
+echo "🌱 Seeding database..."
+php artisan db:seed --force
 
 # Clear and cache config/routes/views for performance
 echo "🔥 Optimizing application..."

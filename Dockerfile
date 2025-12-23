@@ -29,11 +29,21 @@ WORKDIR /var/www/html
 # Copy application code
 COPY . /var/www/html
 
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Install dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev --ignore-platform-reqs
+
+# Build frontend assets
+COPY package*.json ./
+COPY vite.config.js ./
+RUN npm install
+RUN npm run build
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
