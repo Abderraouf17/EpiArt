@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Auto-configure APP_URL for Render
+if [ ! -z "$RENDER_EXTERNAL_URL" ]; then
+    export APP_URL="$RENDER_EXTERNAL_URL"
+    echo "🌍 configured APP_URL: $APP_URL"
+fi
+
 # Run migrations (force is needed for production)
 echo "🚀 Running database migrations..."
 php artisan migrate --force
