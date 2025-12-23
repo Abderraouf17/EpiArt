@@ -23,12 +23,14 @@ class ShippingRuleSeeder extends Seeder
         ];
 
         foreach ($wilayas as $wilaya) {
-            ShippingRule::create([
-                'wilaya' => $wilaya['wilaya'],
-                'wilaya_code' => $wilaya['wilaya_code'],
-                'home_delivery_fee' => $wilaya['home'],
-                'desk_delivery_fee' => $wilaya['desk'],
-            ]);
+            ShippingRule::firstOrCreate(
+                ['wilaya_code' => $wilaya['wilaya_code']],
+                [
+                    'wilaya' => $wilaya['wilaya'],
+                    'home_delivery_fee' => $wilaya['home'],
+                    'desk_delivery_fee' => $wilaya['desk'],
+                ]
+            );
         }
     }
 }
