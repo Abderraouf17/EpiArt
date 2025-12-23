@@ -1,0 +1,12 @@
+.git
+.env
+node_modules
+vendor
+storage/*.key
+**/.DS_Store
+.idea
+.vscode
+public/storage
+tests
+phpunit.xml
+README.md
