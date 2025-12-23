@@ -10,11 +10,11 @@
     <div id="product-data" data-auth="{{ $isAuth ? 'true' : 'false' }}" data-price="{{ $priceValue }}"
         data-product-id="{{ $prodId }}" class="hidden"></div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12">
         <div class="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
             <!-- Image Gallery -->
             <div class="space-y-4">
-                <div class="aspect-square rounded-2xl overflow-hidden bg-gray-100 relative group">
+                <div class="w-full max-h-[400px] md:max-h-none md:aspect-square rounded-2xl overflow-hidden bg-gray-100 relative group">
                     @if($product->images->first())
                         <img id="main-image" src="{{ $product->images->first()->image_url }}" alt="{{ $product->name }}"
                             class="w-full h-full object-cover transform transition duration-500 group-hover:scale-105">
@@ -33,7 +33,7 @@
                 </div>
 
                 @if($product->images->count() > 1)
-                    <div class="grid grid-cols-4 gap-4">
+                    <div class="grid grid-cols-4 gap-2 md:gap-4">
                         @foreach($product->images as $image)
                             <button onclick="document.getElementById('main-image').src = '{{ $image->image_url }}'" 
                                 class="aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-[#8B3A3A] transition focus:outline-none focus:border-[#8B3A3A]">
@@ -60,10 +60,10 @@
                     </ol>
                 </nav>
 
-                <h1 class="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">{{ $product->name }}</h1>
+                <h1 class="font-serif text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900">{{ $product->name }}</h1>
 
-                <div class="mt-4 flex items-end gap-4">
-                    <p class="font-serif text-3xl font-bold text-[#8B3A3A]">
+                <div class="mt-3 md:mt-4 flex items-end gap-3 md:gap-4">
+                    <p class="font-serif text-2xl md:text-3xl font-bold text-[#8B3A3A]">
                         <span id="total-price">{{ number_format((float) $product->price, 2) }}</span> <span class="text-lg text-gray-600 font-sans font-normal">DA</span>
                     </p>
                     @if($product->category)
@@ -73,11 +73,11 @@
                     @endif
                 </div>
 
-                <div class="mt-8 prose prose-sm text-gray-600 font-light leading-relaxed">
+                <div class="mt-6 md:mt-8 prose prose-sm text-gray-600 font-light leading-relaxed text-sm md:text-base">
                     {{ $product->description }}
                 </div>
 
-                <form id="add-to-cart" class="mt-8 border-t border-gray-200 pt-8">
+                <form id="add-to-cart" class="mt-6 md:mt-8 border-t border-gray-200 pt-6 md:pt-8">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <input type="hidden" name="price" id="price-input" value="{{ $product->price }}">
@@ -124,11 +124,11 @@
                             <button type="button" onclick="updateQty(1)" class="px-4 h-full text-gray-600 hover:bg-gray-100 transition text-lg">+</button>
                         </div>
 
-                        <div class="flex-1 grid grid-cols-2 gap-4">
-                            <button type="submit" class="w-full flex items-center justify-center rounded-xl bg-[#8B3A3A] px-8 py-3 text-base font-medium text-white hover:bg-[#722F37] focus:outline-none focus:ring-2 focus:ring-[#8B3A3A] focus:ring-offset-2 transition-all shadow-md hover:shadow-lg">
+                        <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                            <button type="submit" class="w-full flex items-center justify-center rounded-xl bg-[#8B3A3A] px-6 md:px-8 py-3 text-sm md:text-base font-medium text-white hover:bg-[#722F37] focus:outline-none focus:ring-2 focus:ring-[#8B3A3A] focus:ring-offset-2 transition-all shadow-md hover:shadow-lg">
                                 Add to Cart
                             </button>
-                            <button type="button" class="buy-now-btn w-full flex items-center justify-center rounded-xl border-2 border-[#8B3A3A] bg-white px-8 py-3 text-base font-medium text-[#8B3A3A] hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#8B3A3A] focus:ring-offset-2 transition-all"
+                            <button type="button" class="buy-now-btn w-full flex items-center justify-center rounded-xl border-2 border-[#8B3A3A] bg-white px-6 md:px-8 py-3 text-sm md:text-base font-medium text-[#8B3A3A] hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#8B3A3A] focus:ring-offset-2 transition-all"
                                 data-product-id="{{ $product->id }}"
                                 data-product-name="{{ $product->name }}"
                                 data-product-price="{{ $product->price }}"
@@ -153,9 +153,9 @@
         </div>
 
         @if($relatedProducts->count() > 0)
-            <div class="mt-24 border-t border-gray-200 pt-12">
-                <h2 class="font-serif text-3xl font-bold text-gray-900 mb-8">Related Products</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6 xl:gap-x-8">
+            <div class="mt-16 md:mt-24 border-t border-gray-200 pt-8 md:pt-12">
+                <h2 class="font-serif text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Related Products</h2>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-y-10 md:gap-x-6 xl:gap-x-8">
                     @foreach($relatedProducts as $related)
                         <div class="group relative">
                             <div class="aspect-square w-full overflow-hidden rounded-xl bg-gray-200 group-hover:opacity-75 relative">
@@ -169,9 +169,9 @@
                                     <a href="/shop/product/{{ $related->slug }}" class="bg-white text-gray-900 px-6 py-2 rounded-full font-medium shadow-lg hover:bg-gray-50 transform translate-y-4 group-hover:translate-y-0 transition">View Details</a>
                                 </div>
                             </div>
-                            <div class="mt-4 flex justify-between">
+                            <div class="mt-3 md:mt-4 flex justify-between">
                                 <div>
-                                    <h3 class="text-lg font-medium text-gray-900">
+                                    <h3 class="text-sm md:text-lg font-medium text-gray-900">
                                         <a href="/shop/product/{{ $related->slug }}">
                                             <span aria-hidden="true" class="absolute inset-0"></span>
                                             {{ $related->name }}

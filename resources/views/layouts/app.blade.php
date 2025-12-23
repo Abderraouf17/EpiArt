@@ -29,7 +29,7 @@
 <body class="font-sans antialiased" x-data="shopStore()" @add-to-cart.window="addToCart($event.detail)"
     @show-notification.window="showNotification($event.detail.message, $event.detail.type)"
     @buy-now.window="buyNow($event.detail)" x-init="$store.shopMode = { currentMode: 'spice' }">
-    <div class="min-h-screen bg-gray-100">
+    <div class="min-h-screen bg-gray-100 pt-20">
         @include('layouts.navigation')
 
         <!-- Page Heading -->
@@ -56,11 +56,12 @@
         x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0"
         x-transition:leave-end="translate-x-full"
-        class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 flex flex-col" style="display: none;">
+        class="fixed top-0 right-0 h-full w-[85%] sm:w-96 bg-white shadow-2xl z-50 flex flex-col"
+        style="display: none;">
 
-        <div class="p-6 border-b flex justify-between items-center"
+        <div class="p-4 md:p-6 border-b flex justify-between items-center"
             style="background: linear-gradient(135deg, #8B3A3A, #722F37);">
-            <h2 class="text-2xl font-bold text-white">Your Cart</h2>
+            <h2 class="text-xl md:text-2xl font-bold text-white">Your Cart</h2>
             <button @click="cartOpen = false" class="text-white hover:text-gray-200">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -68,7 +69,7 @@
             </button>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-6">
+        <div class="flex-1 overflow-y-auto p-4 md:p-6">
             <template x-if="cartItems.length === 0">
                 <div class="text-center py-12">
                     <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor"
@@ -81,19 +82,25 @@
             </template>
 
             <template x-for="item in cartItems" :key="item.id">
-                <div class="flex gap-4 mb-4 p-4 border rounded-lg hover:shadow-md transition relative group">
-                    <a :href="'/shop/product/' + item.slug" class="absolute inset-0 z-0"></a>
-                    <img :src="item.image" :alt="item.name" class="w-20 h-20 object-cover rounded relative z-0">
-                    <div class="flex-1 relative z-0">
-                        <h3 class="font-semibold text-gray-800" x-text="item.name"></h3>
-                        <p class="text-sm text-gray-600" x-text="item.price + ' DA'"></p>
-                        <div class="flex items-center gap-2 mt-2 relative z-20">
-                            <button @click="updateQuantity(item.id, -1)"
-                                class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
-                            <span x-text="item.quantity" class="px-3"></span>
-                            <button @click="updateQuantity(item.id, 1)"
-                                class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
-                            <button @click="removeFromCart(item.id)" class="ml-auto text-red-500 hover:text-red-700">
+                <div
+                    class="flex gap-3 md:gap-4 mb-3 md:mb-4 p-3 md:p-4 border rounded-lg hover:shadow-md transition group">
+                    <a :href="'/shop/product/' + item.slug" class="flex-shrink-0">
+                        <img :src="item.image" :alt="item.name"
+                            class="w-16 h-16 md:w-20 md:h-20 object-cover rounded hover:opacity-80 transition">
+                    </a>
+                    <div class="flex-1 flex flex-col">
+                        <a :href="'/shop/product/' + item.slug" class="hover:text-[#8B3A3A] transition">
+                            <h3 class="font-semibold text-sm md:text-base text-gray-800" x-text="item.name"></h3>
+                        </a>
+                        <p class="text-xs md:text-sm text-gray-600 mb-2" x-text="item.price + ' DA'"></p>
+                        <div class="flex items-center gap-2 mt-auto">
+                            <button @click.stop="updateQuantity(item.id, -1)"
+                                class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 transition text-sm">-</button>
+                            <span x-text="item.quantity" class="px-2 md:px-3 font-medium text-sm"></span>
+                            <button @click.stop="updateQuantity(item.id, 1)"
+                                class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 transition text-sm">+</button>
+                            <button @click.stop="removeFromCart(item.id)"
+                                class="ml-auto text-red-500 hover:text-red-700 transition">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -105,14 +112,21 @@
             </template>
         </div>
 
-        <div class="border-t p-6 bg-gray-50">
+        <div class="border-t p-4 md:p-6 bg-gray-50">
             <div class="flex justify-between mb-4">
-                <span class="text-lg font-semibold text-gray-800">Total:</span>
-                <span class="text-lg font-bold text-gray-900" x-text="cartTotal() + ' DA'"></span>
+                <span class="text-base md:text-lg font-semibold text-gray-800">Total:</span>
+                <span class="text-base md:text-lg font-bold text-gray-900" x-text="cartTotal() + ' DA'"></span>
             </div>
+
+            <!-- Empty Cart Button -->
+            <button @click="clearCart()" x-show="cartItems.length > 0"
+                class="w-full mb-3 py-2 md:py-2.5 rounded-lg text-sm md:text-base text-red-600 font-semibold transition-all border-2 border-red-600 hover:bg-red-50">
+                Empty Cart
+            </button>
+
             <button @click="goToCheckout()" :disabled="cartItems.length === 0"
                 :class="cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg transform hover:-translate-y-0.5'"
-                class="w-full py-3 rounded-lg text-white font-semibold transition-all"
+                class="w-full py-3 rounded-lg text-white text-sm md:text-base font-semibold transition-all"
                 style="background: linear-gradient(135deg, #8B3A3A, #722F37);">
                 Checkout
             </button>
@@ -124,41 +138,90 @@
         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20" style="display: none;">
-        <div @click.stop class="bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-4">
-            <div class="p-6">
-                <div class="flex items-center gap-3 mb-4">
-                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <input type="text" x-model="searchQuery" @input="performSearch" placeholder="Search for products..."
-                        class="flex-1 text-lg outline-none" autofocus>
-                    <button @click="searchOpen = false" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 flex items-start justify-center pt-24"
+        style="display: none;">
+        <div @click.stop
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 overflow-hidden transform transition-all"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+
+            <!-- Header with Gradient -->
+            <div class="bg-gradient-to-r from-[#8B3A3A] to-[#722F37] p-6">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <input type="text" x-model="searchQuery" @input="performSearch"
+                            placeholder="Search for spices, beauty products..."
+                            class="w-full bg-white/10 backdrop-blur-sm text-white placeholder-white/70 text-lg px-4 py-3 rounded-lg outline-none border-2 border-white/20 focus:border-white/40 transition-all"
+                            autofocus>
+                    </div>
+                    <button @click="searchOpen = false"
+                        class="flex-shrink-0 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <div class="border-t pt-4 max-h-96 overflow-y-auto">
-                    <template x-if="searchQuery.length === 0">
-                        <p class="text-gray-400 text-center py-8">Start typing to search...</p>
-                    </template>
-                    <template x-if="searchQuery.length > 0 && searchResults.length === 0">
-                        <p class="text-gray-400 text-center py-8">No results found</p>
-                    </template>
-                    <template x-for="result in searchResults" :key="result.id">
-                        <a :href="`/shop/product/${result.slug}`"
-                            class="flex gap-4 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition">
-                            <img :src="result.image" :alt="result.name" class="w-16 h-16 object-cover rounded">
-                            <div>
-                                <h4 class="font-semibold text-gray-800" x-text="result.name"></h4>
-                                <p class="text-sm text-gray-600" x-text="result.price + ' DA'"></p>
-                            </div>
-                        </a>
-                    </template>
-                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="max-h-[500px] overflow-y-auto p-6 bg-gray-50">
+                <template x-if="searchQuery.length === 0">
+                    <div class="text-center py-16">
+                        <div
+                            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#8B3A3A]/10 to-[#722F37]/10 rounded-full mb-4">
+                            <svg class="w-10 h-10 text-[#8B3A3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <p class="text-gray-500 text-lg font-medium">Start typing to search...</p>
+                        <p class="text-gray-400 text-sm mt-2">Find your favorite spices and beauty products</p>
+                    </div>
+                </template>
+
+                <template x-if="searchQuery.length > 0 && searchResults.length === 0">
+                    <div class="text-center py-16">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-200 rounded-full mb-4">
+                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <p class="text-gray-600 text-lg font-medium">No results found</p>
+                        <p class="text-gray-400 text-sm mt-2">Try searching with different keywords</p>
+                    </div>
+                </template>
+
+                <template x-for="result in searchResults" :key="result.id">
+                    <a :href="`/shop/product/${result.slug}`"
+                        class="flex gap-4 p-4 mb-3 bg-white hover:bg-gradient-to-r hover:from-white hover:to-gray-50 rounded-xl cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md border border-gray-100 group">
+                        <div class="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
+                            <img :src="result.image" :alt="result.name"
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-semibold text-gray-900 group-hover:text-[#8B3A3A] transition-colors truncate mb-1"
+                                x-text="result.name"></h4>
+                            <p class="text-[#8B3A3A] font-bold text-lg" x-text="result.price + ' DA'"></p>
+                        </div>
+                        <div class="flex-shrink-0 flex items-center">
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-[#8B3A3A] transition-colors" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </a>
+                </template>
             </div>
         </div>
     </div>
@@ -180,6 +243,53 @@
         <p id="notification-message" style="margin: 0; color: #1f2937; font-weight: 500;"></p>
     </div>
 
+    <!-- Confirmation Modal -->
+    <div x-show="showConfirmModal" x-cloak @click.away="showConfirmModal = false"
+        class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[60] flex items-center justify-center"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
+        <div @click.stop class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden"
+            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
+
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-red-600 to-red-700 p-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Confirm Action</h3>
+                        <p class="text-white/80 text-sm">This action cannot be undone</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6">
+                <p class="text-gray-700 text-lg mb-6">Are you sure you want to empty your cart? All items will be
+                    removed.</p>
+
+                <!-- Actions -->
+                <div class="flex gap-3">
+                    <button @click="showConfirmModal = false"
+                        class="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-all">
+                        Cancel
+                    </button>
+                    <button @click="confirmClearCart()"
+                        class="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg font-semibold hover:shadow-lg transition-all">
+                        Empty Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <style>
         #toast-notification {
             transform: translateX(400px);
@@ -197,6 +307,7 @@
                 open: false,
                 cartOpen: false,
                 searchOpen: false,
+                showConfirmModal: false,
                 cartItems: @json(array_values(session('cart', []))),
                 wishlistCount: @json(Auth::check() ? Auth::user()->wishlists()->count() : 0),
                 searchQuery: '',
@@ -219,7 +330,6 @@
                 },
 
                 removeFromCart(id) {
-                    this.cartItems = this.cartItems.filter(i => i.id != id);
                     fetch('/cart/remove', {
                         method: 'POST',
                         headers: {
@@ -227,7 +337,42 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                         },
                         body: JSON.stringify({ key: id })
-                    });
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.cartItems = this.cartItems.filter(i => i.id != id);
+                            this.showNotification('تم إزالة المنتج من السلة', 'success');
+                        })
+                        .catch(error => {
+                            console.error('Error removing item:', error);
+                            this.showNotification('فشل في إزالة المنتج', 'error');
+                        });
+                },
+
+
+                clearCart() {
+                    this.showConfirmModal = true;
+                },
+
+                confirmClearCart() {
+                    this.showConfirmModal = false;
+
+                    fetch('/cart/clear', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            this.cartItems = [];
+                            this.showNotification('تم إفراغ السلة', 'success');
+                        })
+                        .catch(error => {
+                            console.error('Error clearing cart:', error);
+                            this.showNotification('فشل في إفراغ السلة', 'error');
+                        });
                 },
 
                 addToCart(product) {

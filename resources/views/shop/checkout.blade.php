@@ -65,10 +65,10 @@
                                             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                 </div>
-                                <h2 class="text-xl font-bold text-gray-800">معلومات التوصيل</h2>
+                                <h2 class="text-lg md:text-xl font-bold text-gray-800">معلومات التوصيل</h2>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">الاسم الأول</label>
                                     <input type="text" name="first_name" required
@@ -83,7 +83,7 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">البريد الإلكتروني</label>
                                     <input type="email" name="email" value="{{ old('email', $userEmail) }}" required
@@ -98,23 +98,23 @@
                             </div>
 
                             <div class="mb-6" x-data="{ 
-                                            open: false, 
-                                            search: '', 
-                                            selected: '', 
-                                            options: {{ $shippingRules->map(fn($r) => ['value' => $r->wilaya, 'label' => $r->wilaya_code . ' - ' . $r->wilaya])->toJson() }},
-                                            get filteredOptions() {
-                                                return this.options.filter(opt => opt.label.toLowerCase().includes(this.search.toLowerCase()));
-                                            },
-                                            select(value) {
-                                                this.selected = value;
-                                                this.open = false;
-                                                this.$nextTick(() => {
-                                                    const input = document.getElementById('wilayaInput');
-                                                    input.value = value;
-                                                    input.dispatchEvent(new Event('change', { bubbles: true }));
-                                                });
-                                            }
-                                        }">
+                                                    open: false, 
+                                                    search: '', 
+                                                    selected: '', 
+                                                    options: {{ $shippingRules->map(fn($r) => ['value' => $r->wilaya, 'label' => $r->wilaya_code . ' - ' . $r->wilaya])->toJson() }},
+                                                    get filteredOptions() {
+                                                        return this.options.filter(opt => opt.label.toLowerCase().includes(this.search.toLowerCase()));
+                                                    },
+                                                    select(value) {
+                                                        this.selected = value;
+                                                        this.open = false;
+                                                        this.$nextTick(() => {
+                                                            const input = document.getElementById('wilayaInput');
+                                                            input.value = value;
+                                                            input.dispatchEvent(new Event('change', { bubbles: true }));
+                                                        });
+                                                    }
+                                                }">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">الولاية</label>
                                 <div class="relative">
                                     <input type="hidden" name="wilaya" id="wilayaInput" required>
@@ -247,7 +247,8 @@
                                     <span>الشحن</span>
                                     <span id="delivery-fee" class="text-amber-600 font-medium">--</span>
                                 </div>
-                                <div class="flex justify-between text-xl font-bold text-gray-900 pt-4 border-t border-gray-100">
+                                <div
+                                    class="flex justify-between text-lg md:text-xl font-bold text-gray-900 pt-3 md:pt-4 border-t border-gray-100">
                                     <span>الإجمالي</span>
                                     <span id="total" class="text-[#8B3A3A]">{{ number_format($subtotalValue, 2) }} DA</span>
                                 </div>

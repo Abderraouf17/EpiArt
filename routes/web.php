@@ -27,6 +27,7 @@ Route::get('/api/search', [ShopController::class, 'apiSearch'])->name('api.searc
 Route::get('/cart', [CartController::class, 'view'])->name('cart.view');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
 Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('checkout.process');
 

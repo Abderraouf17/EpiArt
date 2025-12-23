@@ -90,18 +90,7 @@ class CartController extends Controller
         unset($cart[$request->key]);
         session()->put('cart', $cart);
 
-        session()->put('cart', $cart);
-
         if (Auth::check()) {
-            $item = CartItem::where('user_id', Auth::id())
-                ->where('product_id', explode('_', $request->key)[0]) // simplistic, but better key parsing needed?
-                // Actually the key is product_id_variation. 
-                // Let's assume the key structure is consistent.
-                // Better approach: filter by the properties stored in session if possible?
-                // But we don't have the item anymore in $cart (unset).
-                // Let's rely on parsing key or just find by matching logic if key logic is strictly `id_variation`.
-                // simpler:
-            ;
             // The key is built as: $product_id . '_' . ($variation_value ?? '')
             $parts = explode('_', $request->key, 2);
             $pId = $parts[0];
@@ -115,7 +104,26 @@ class CartController extends Controller
                 ->delete();
         }
 
-        return back()->with('success', 'تم إزالة المنتج من السلة');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'تم إزالة المنتج من السلة'
+        ]);
+    }
+
+    public function clear()
+    {
+        // Clear session cart
+        session()->forget('cart');
+
+        // Clear database cart for authenticated users
+        if (Auth::check()) {
+            CartItem::where('user_id', Auth::id())->delete();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'تم إفراغ السلة'
+        ]);
     }
 
     public function checkout()

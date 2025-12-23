@@ -16,7 +16,7 @@
             </div>
             <h2 class="text-2xl font-serif font-bold text-gray-900 mb-3">Your wishlist is empty</h2>
             <p class="text-gray-500 mb-8 max-w-sm mx-auto">Save items you love here to easily find them later. Start exploring our collection today.</p>
-            <a href="/shop" class="inline-flex items-center justify-center rounded-xl bg-[#8B3A3A] px-8 py-3 text-base font-medium text-white hover:bg-[#722F37] transition shadow-md hover:shadow-lg">
+            <a href="/" class="inline-flex items-center justify-center rounded-xl bg-[#8B3A3A] px-8 py-3 text-base font-medium text-white hover:bg-[#722F37] transition shadow-md hover:shadow-lg">
                 Explore Shop
             </a>
         </div>

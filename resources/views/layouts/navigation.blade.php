@@ -9,25 +9,19 @@
                 </a>
             </div>
 
-            <!-- Center: Shop Button + Spices/Beauty Links -->
+            <!-- Center: Home Button (Dashboard only) -->
             <div class="hidden md:flex items-center gap-3">
-                <!-- Shop Button - Goes to home page and scrolls to products -->
-                <a href="/#all-products"
-                    class="px-6 py-2 bg-gray-800 text-white rounded-full text-sm font-semibold hover:bg-gray-700 transition-all duration-300 shadow-md hover:shadow-lg">
-                    Shop
-                </a>
-
-                <!-- Spices/Beauty Links -->
-                <div class="flex bg-gray-100 p-1 rounded-full">
+                @if(request()->is('dashboard') || request()->is('dashboard/*'))
+                    <!-- Home Button - Shows when on dashboard -->
                     <a href="/"
-                        class="w-24 h-8 rounded-full text-sm font-semibold transition-all duration-300 flex items-center justify-center {{ request()->is('/') ? 'bg-white shadow-sm text-spice-800' : 'text-gray-500 hover:text-gray-700' }}">
-                        Spices
+                        class="px-6 py-2 bg-gray-800 text-white rounded-full text-sm font-semibold hover:bg-gray-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Home
                     </a>
-                    <a href="/#beauty"
-                        class="w-24 h-8 rounded-full text-sm font-semibold transition-all duration-300 flex items-center justify-center text-gray-500 hover:text-gray-700">
-                        Beauty
-                    </a>
-                </div>
+                @endif
             </div>
 
             <!-- Right Actions -->
@@ -84,6 +78,20 @@
                             Profile
                         </a>
                     @endif
+
+                    <!-- Logout Button -->
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit"
+                            class="flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 ring-1 ring-black/5"
+                            style="background: linear-gradient(135deg,#dc2626,#b91c1c); box-shadow: 0 6px 18px rgba(220,38,38,0.2)">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Logout
+                        </button>
+                    </form>
                 @else
                     <a href="{{ route('login') }}"
                         class="flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105 ring-1 ring-black/5"

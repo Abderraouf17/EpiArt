@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
 
 class WelcomeController extends Controller
 {
@@ -21,9 +22,15 @@ class WelcomeController extends Controller
             ->limit(8) // 4 spice + 4 beauty
             ->get();
 
+        // Fetch categories for filtering
+        $spiceCategories = Category::where('type', 'spice')->orderBy('name')->get();
+        $beautyCategories = Category::where('type', 'beauty')->orderBy('name')->get();
+
         return view('welcome', [
             'newProducts' => $newProducts,
             'featuredProducts' => $featuredProducts,
+            'spiceCategories' => $spiceCategories,
+            'beautyCategories' => $beautyCategories,
         ]);
     }
 }
