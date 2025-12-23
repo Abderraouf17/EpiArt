@@ -7,6 +7,12 @@ if [ ! -z "$RENDER_EXTERNAL_URL" ]; then
     echo "🌍 configured APP_URL: $APP_URL"
 fi
 
+# Force Production Mode for Render (Default is local if undefined)
+# This ensures AppServiceProvider forces HTTPS
+export APP_ENV=production
+export APP_DEBUG=false
+echo "🔒 Enforcing Production Mode"
+
 # Run migrations (force is needed for production)
 echo "🚀 Running database migrations..."
 php artisan migrate --force
