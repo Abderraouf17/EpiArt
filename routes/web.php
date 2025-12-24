@@ -15,7 +15,7 @@ use App\Http\Controllers\Admin\ShippingController;
 use Illuminate\Support\Facades\Route;
 
 // Public Routes
-Route::get('/', [WelcomeController::class, 'index']);
+Route::get('/', [WelcomeController::class, 'index'])->name('shop.index');
 
 // Product detail and category routes
 Route::get('/shop/category/{category}', [ShopController::class, 'category'])->name('shop.category');
@@ -32,7 +32,7 @@ Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
 Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('checkout.process');
 
 // Order Success (public - for guest orders)
-Route::get('/order/success/{order}', [CartController::class, 'orderSuccess'])->name('order.success');
+Route::get('/order/success/{id}', [CartController::class, 'orderSuccess'])->name('order.success');
 
 // Wishlist (public add for guest check)
 Route::post('/wishlist/add', [DashboardController::class, 'addToWishlist'])->name('wishlist.add');

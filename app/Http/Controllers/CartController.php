@@ -270,8 +270,11 @@ class CartController extends Controller
         session()->put('cart', $dbCart);
     }
 
-    public function orderSuccess(Order $order)
+    public function orderSuccess($id)
     {
+        // Manual lookup to avoid Route Binding issues
+        $order = Order::findOrFail($id);
+
         // Show order success page for guests
         return view('shop.order-success', compact('order'));
     }
